@@ -1,0 +1,895 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#16141f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="C&amp;C">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<!-- Built from app.html by tools/build-pages.py. Edit app.html, not this file. -->
+<title>Coin &amp; Compass</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Figtree:wght@400;500;600&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+/* Layout: one column on phone; on laptop the summary tiles run across, then the pay chart, then goals beside what's coming up.
+   Same Proton Seasons look as Jackets & Manuscripts: a night base tinted by the month, one soft accent per month.
+   Dark-only by design, like the rest of the suite. */
+:root{
+  --bg:#16141f; --surface:#1e1b2b; --raise:#2a2640; --line:#353050;
+  --fg:#f1effa; --muted:#a49fbf; --accent:#43ad8f; --accent-next:#7bae6a; --accent-ink:#ffffff; --accent-2:#c4f04a;
+  --good:#6fd39a; --warn:#f0c160; --danger:#ff7a7a;
+  --display:"Atkinson Hyperlegible",ui-sans-serif,system-ui,sans-serif;
+  --body:"Figtree",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:15px/1.5 var(--body);margin:0}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
+h1,h2,.num{font-family:var(--display)}
+h2{font-size:17px;font-weight:700;margin:0;letter-spacing:-.01em;text-wrap:balance}
+.eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);font-weight:600}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.tnum{font-variant-numeric:tabular-nums}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:20px}
+#todayLabel{color:var(--accent)}
+.lockup{--mk:52px;display:flex;align-items:center;gap:calc(var(--mk)*.16);margin:6px 0 0;font-size:inherit}
+.cc-mark{width:var(--mk);height:var(--mk);flex:none;color:var(--accent);display:block}
+.cc-wordmark{font-family:var(--display);font-weight:700;font-size:calc(var(--mk)*.38);line-height:1.06;letter-spacing:-.01em;color:#eef0fa}
+@media (max-width:520px){.lockup{--mk:44px}}
+.status{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:none}
+.status[data-state="live"] .dot{background:var(--accent)}
+.status[data-state="error"] .dot{background:var(--danger)}
+.status[data-state="loading"] .dot{background:var(--accent);animation:pulse 1s infinite alternate}
+@keyframes pulse{to{opacity:.3}}
+.btn{border:1px solid var(--line);background:var(--raise);color:var(--fg);border-radius:8px;padding:7px 12px;font-weight:600;font-size:13px}
+.btn:hover{border-color:var(--muted)}
+.btn-primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn-primary:hover{filter:brightness(1.08);border-color:var(--accent)}
+.btn:disabled{opacity:.5;cursor:default}
+.btn-sm{padding:4px 10px;font-size:12px}
+.notice{background:var(--raise);border:1px solid var(--line);border-left:3px solid var(--accent);padding:10px 14px;border-radius:8px;margin-bottom:18px;font-size:14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:space-between}
+.notice[data-kind="error"]{border-left-color:var(--danger)}
+.notice[data-kind="demo"]{border-left-color:var(--warn)}
+
+.tabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px;margin-bottom:20px;width:max-content;max-width:100%;overflow-x:auto}
+.tab{border:0;background:transparent;color:var(--muted);border-radius:8px;padding:7px 16px;font-weight:600;font-size:14px;white-space:nowrap}
+.tab[aria-selected="true"]{background:color-mix(in srgb,var(--accent) 24%,var(--surface));color:var(--fg);box-shadow:inset 0 -2px 0 var(--accent)}
+
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:20px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.stat .num{font-size:clamp(26px,3.6vw,36px);font-weight:700;line-height:1.05;letter-spacing:-.02em}
+.stat .sub{font-size:13px;color:var(--muted)}
+.stat.lead{background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 20%,var(--surface)),color-mix(in srgb,var(--accent-next) 8%,var(--surface)) 75%);border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
+.stat.lead .num{color:color-mix(in srgb,var(--accent) 70%,#fff)}
+@media (max-width:860px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;min-width:0}
+.panel-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.cols{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:20px;margin-top:20px;align-items:start}
+@media (max-width:860px){.cols{grid-template-columns:minmax(0,1fr)}}
+.stack{display:flex;flex-direction:column;gap:20px}
+
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;white-space:nowrap;border:1px solid transparent}
+.chip::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.chip.good{color:var(--good);background:color-mix(in srgb,var(--good) 12%,transparent);border-color:color-mix(in srgb,var(--good) 30%,transparent)}
+.chip.warn{color:var(--warn);background:color-mix(in srgb,var(--warn) 12%,transparent);border-color:color-mix(in srgb,var(--warn) 30%,transparent)}
+.chip.bad{color:var(--danger);background:color-mix(in srgb,var(--danger) 12%,transparent);border-color:color-mix(in srgb,var(--danger) 30%,transparent)}
+.chip.plain{color:var(--muted);background:var(--raise)}
+.chip.plain::before{display:none}
+.chip.accent{color:var(--fg);background:color-mix(in srgb,var(--accent) 22%,transparent);border-color:color-mix(in srgb,var(--accent) 45%,transparent)}
+.chip.accent::before{background:var(--accent)}
+
+.chart-box{position:relative;height:230px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:10px;height:10px;border-radius:2px;display:inline-block}
+.sw.line{height:2px;width:14px;border-radius:1px}
+
+.goal{padding:12px 0;border-top:1px solid var(--line);display:grid;gap:6px}
+.goal:first-child{border-top:0;padding-top:0}
+.goal .row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.goal .name{font-weight:600}
+.bar{height:6px;border-radius:3px;background:var(--raise);overflow:hidden}
+.bar>i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent),var(--accent-next))}
+
+.list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.list li{display:grid;grid-template-columns:76px minmax(0,1fr) auto;gap:10px;align-items:baseline;padding:8px 0;border-top:1px solid var(--line);font-size:14px}
+.list li:first-child{border-top:0}
+.list .when{font-size:12px;color:var(--muted)}
+.list .amt{font-weight:600}
+.list li.pay .what{font-weight:600;color:var(--accent)}
+.list li.marker .what{font-weight:600}
+.empty{color:var(--muted);font-size:14px;padding:6px 0}
+
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{background:var(--raise);text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:600;padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-top:1px solid var(--line);vertical-align:top}
+th.r,td.r{text-align:right}
+table.fc{min-width:720px}
+.fc tr.row{cursor:pointer}
+.fc tr.row:hover td{background:color-mix(in srgb,var(--accent) 6%,var(--surface))}
+.fc tr.open td{background:color-mix(in srgb,var(--accent) 9%,var(--surface))}
+.fc .date{font-weight:600;white-space:nowrap}
+.fc .tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+.fc td.left{font-weight:700}
+.fc tr.detail td{background:var(--bg);padding:12px 16px}
+.detail-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+@media (max-width:860px){.detail-grid{grid-template-columns:minmax(0,1fr)}}
+.detail-grid h3{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 6px;font-weight:600}
+.detail-grid ul{list-style:none;margin:0;padding:0;display:grid;gap:4px;font-size:13px}
+.detail-grid li{display:flex;justify-content:space-between;gap:10px}
+.detail-grid li span:first-child{min-width:0}
+.range-tabs{display:flex;gap:4px}
+.range-tabs button{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:6px;padding:3px 9px;font-size:12px;font-weight:600}
+.range-tabs button[aria-pressed="true"]{background:color-mix(in srgb,var(--accent) 28%,var(--surface));color:var(--fg);border-color:var(--accent)}
+.summary-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:16px}
+@media (max-width:640px){.summary-row{grid-template-columns:minmax(0,1fr)}}
+
+.field{display:grid;gap:4px}
+.field label{font-size:12px;color:var(--muted);font-weight:600}
+input[type=number],input[type=date],input[type=text],.field input{font:inherit;font-size:14px;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:7px 10px;min-width:0}
+input:focus{border-color:var(--accent);outline:none}
+input[type=number]{font-variant-numeric:tabular-nums;text-align:right}
+.ci-head{display:flex;gap:12px;align-items:end;flex-wrap:wrap;margin-bottom:12px}
+.ci-row{display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.ci-row:first-child{border-top:0}
+.ci-row .nm{font-weight:600}
+.ci-row input{width:100%}
+.ci-foot{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+
+dialog{background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:14px;padding:0;width:min(560px,calc(100vw - 32px))}
+dialog::backdrop{background:rgba(8,6,14,.6)}
+.dlg-head,.dlg-foot{display:flex;justify-content:space-between;gap:12px;padding:14px 20px;align-items:center}
+.dlg-head{border-bottom:1px solid var(--line)}
+.dlg-foot{border-top:1px solid var(--line)}
+.dlg-body{padding:16px 20px;display:grid;gap:14px}
+.dlg-body p{margin:0;font-size:14px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <div class="eyebrow" id="todayLabel">Today</div>
+      <h1 class="lockup" aria-label="Coin &amp; Compass"><svg class="cc-mark" viewBox="0 0 100 100" aria-hidden="true">
+<circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" stroke-width="8"/>
+<circle cx="50" cy="50" r="31" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="3 5.12" opacity=".55"/>
+<polygon points="50,14 59,50 41,50" fill="currentColor"/>
+<polygon points="50,86 59,50 41,50" fill="currentColor" opacity=".38"/>
+<circle cx="50" cy="50" r="5" fill="currentColor"/></svg><span class="cc-wordmark" aria-hidden="true">Coin &amp;<br>Compass</span></h1>
+    </div>
+    <div class="status" id="status" data-state="loading" role="status">
+      <span class="dot"></span><span id="statusText">Connecting to your sheet…</span>
+      <button class="btn" id="refreshBtn" type="button">Refresh</button>
+      <button class="btn" id="setupBtn" type="button">Sheet</button>
+    </div>
+  </header>
+
+  <div class="notice" id="notice" hidden></div>
+
+  <nav class="tabs" role="tablist" aria-label="Sections">
+    <button class="tab" role="tab" id="tab-dash" aria-selected="true" aria-controls="view-dash" type="button">Dashboard</button>
+    <button class="tab" role="tab" id="tab-forecast" aria-selected="false" aria-controls="view-forecast" type="button">Pay forecast</button>
+    <button class="tab" role="tab" id="tab-checkin" aria-selected="false" aria-controls="view-checkin" type="button">Check-in</button>
+  </nav>
+
+  <!-- Dashboard -->
+  <div id="view-dash" role="tabpanel" aria-labelledby="tab-dash">
+    <section class="stats" aria-label="Summary">
+      <div class="stat lead"><span class="eyebrow">Next payday</span><span class="num tnum" id="sPay">–</span><span class="sub" id="sPaySub"></span></div>
+      <div class="stat"><span class="eyebrow">Left over this pay</span><span class="num tnum" id="sLeft">–</span><span class="sub" id="sLeftSub"></span></div>
+      <div class="stat"><span class="eyebrow">Pay-in-4 still owed</span><span class="num tnum" id="sOwed">–</span><span class="sub" id="sOwedSub"></span></div>
+      <div class="stat"><span class="eyebrow">Cash across accounts</span><span class="num tnum" id="sCash">–</span><span class="sub" id="sCashSub"></span></div>
+    </section>
+
+    <section class="panel" aria-labelledby="chartTitle">
+      <div class="panel-head">
+        <div><h2 id="chartTitle">Left over each pay</h2><div class="muted small">What's left after bills, spending and Pay-in-4, for the next 26 pays. This is what moves to savings.</div></div>
+        <div class="legend"><span><i class="sw" style="background:var(--accent)"></i>At or above target</span><span><i class="sw" style="background:var(--warn)"></i>Below target</span><span><i class="sw" style="background:var(--danger)"></i>Short</span><span><i class="sw line" style="background:var(--accent-2)"></i>Savings target</span></div>
+      </div>
+      <div class="chart-box"><canvas id="leftChart" role="img" aria-label="Bar chart of money left over each payday for the next 26 pays, against the savings target"></canvas></div>
+    </section>
+
+    <div class="cols">
+      <div class="stack">
+        <section class="panel" aria-labelledby="goalsTitle">
+          <div class="panel-head"><h2 id="goalsTitle">Goals</h2><span class="muted small" id="goalsSub"></span></div>
+          <div id="goalsList"></div>
+        </section>
+        <section class="panel" aria-labelledby="saversTitle">
+          <div class="panel-head"><h2 id="saversTitle">Savers vs the bills they cover</h2><span class="muted small">After the move</span></div>
+          <ul class="list" id="saversList"></ul>
+        </section>
+      </div>
+      <section class="panel" aria-labelledby="soonTitle">
+        <div class="panel-head"><h2 id="soonTitle">Coming up</h2><span class="muted small">Next 3 weeks</span></div>
+        <ul class="list" id="soonList"></ul>
+      </section>
+    </div>
+  </div>
+
+  <!-- Pay forecast -->
+  <div id="view-forecast" role="tabpanel" aria-labelledby="tab-forecast" hidden>
+    <div class="panel-head">
+      <div><h2>Pay forecast</h2><div class="muted small">One row per payday. Select a row to see what's in it.</div></div>
+      <div class="range-tabs" role="group" aria-label="How many pays">
+        <button type="button" data-range="7" aria-pressed="false">3 months</button>
+        <button type="button" data-range="13" aria-pressed="true">6 months</button>
+        <button type="button" data-range="26" aria-pressed="false">12 months</button>
+      </div>
+    </div>
+    <div class="summary-row">
+      <div class="stat"><span class="eyebrow">To savings over these pays</span><span class="num tnum" id="fTotal">–</span><span class="sub" id="fTotalSub"></span></div>
+      <div class="stat"><span class="eyebrow">Average per pay</span><span class="num tnum" id="fAvg">–</span><span class="sub" id="fAvgSub"></span></div>
+      <div class="stat"><span class="eyebrow">Tightest pay</span><span class="num tnum" id="fLow">–</span><span class="sub" id="fLowSub"></span></div>
+    </div>
+    <div class="table-wrap">
+      <table class="fc">
+        <thead><tr><th>Payday</th><th class="r">Take-home</th><th class="r">Bills</th><th class="r">Spending</th><th class="r">Pay-in-4</th><th class="r">Left over</th><th>Against target</th></tr></thead>
+        <tbody id="fcBody"></tbody>
+      </table>
+    </div>
+    <p class="muted small">Bills with a due date land in the pay they fall in. Yearly, quarterly and undated costs are spread evenly, as the amount to set aside each pay.</p>
+  </div>
+
+  <!-- Check-in -->
+  <div id="view-checkin" role="tabpanel" aria-labelledby="tab-checkin" hidden>
+    <div class="cols" style="margin-top:0">
+      <section class="panel" aria-labelledby="ciTitle">
+        <div class="panel-head"><div><h2 id="ciTitle">Balance check-in</h2><div class="muted small">Fill in the accounts you've checked. Blank ones are skipped.</div></div></div>
+        <form id="ciForm" novalidate>
+          <div class="ci-head">
+            <div class="field"><label for="ciDate">Date</label><input type="date" id="ciDate" required></div>
+            <div class="field" style="flex:1 1 200px"><label for="ciNote">Note (optional)</label><input type="text" id="ciNote" placeholder="e.g. after the pay sweep"></div>
+          </div>
+          <div id="ciRows"></div>
+          <div class="ci-foot"><span class="muted small" id="ciMsg" role="status"></span><button class="btn btn-primary" type="submit" id="ciSave">Save check-in</button></div>
+        </form>
+      </section>
+      <div class="stack">
+        <section class="panel" aria-labelledby="instTitle">
+          <div class="panel-head"><h2 id="instTitle">Pay-in-4 payments</h2><span class="muted small" id="instSub"></span></div>
+          <ul class="list" id="instList"></ul>
+        </section>
+        <section class="panel" aria-labelledby="histTitle">
+          <div class="panel-head"><h2 id="histTitle">Recent check-ins</h2></div>
+          <ul class="list" id="histList"></ul>
+        </section>
+      </div>
+    </div>
+  </div>
+</div>
+
+<dialog id="setupDlg" aria-labelledby="setupTitle">
+  <form id="setupForm" method="dialog">
+    <div class="dlg-head"><h2 id="setupTitle">Connect your budget sheet</h2><button class="btn" type="button" id="setupClose">Close</button></div>
+    <div class="dlg-body">
+      <p class="muted">Paste the link to your "Personal Budget" Google Sheet. It's saved in this browser only, never in the app's code.</p>
+      <div class="field"><label for="setupSheet">Sheet link or ID</label><input id="setupSheet" autocomplete="off" spellcheck="false" placeholder="https://docs.google.com/spreadsheets/d/…"></div>
+      <div class="field" id="setupClientWrap" hidden><label for="setupClient">OAuth Client ID</label><input id="setupClient" autocomplete="off" spellcheck="false" placeholder="1234…apps.googleusercontent.com"><span class="muted small">The same Client ID Jackets &amp; Manuscripts uses.</span></div>
+    </div>
+    <div class="dlg-foot"><span class="muted small" id="setupMsg"></span><button class="btn btn-primary" type="submit">Connect</button></div>
+  </form>
+</dialog>
+
+<script>
+const SERVER = 'Google Sheets';
+const CFG_KEY = 'cc_config';
+
+/* ---------- dates (local time, so "today" is Melbourne time on your devices) ---------- */
+const pad = n => String(n).padStart(2, '0');
+const iso = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const fromIso = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+const addDays = (s, n) => { const d = fromIso(s); d.setDate(d.getDate() + n); return iso(d); };
+const daysBetween = (a, b) => Math.round((fromIso(b) - fromIso(a)) / 864e5);
+const today = () => iso(new Date());
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const FULL_MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const WEEKDAYS = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+const ORD = n => n + (n % 10 === 1 && n !== 11 ? 'st' : n % 10 === 2 && n !== 12 ? 'nd' : n % 10 === 3 && n !== 13 ? 'rd' : 'th');
+
+// The sheet returns what it displays: "16 Oct 2026", "Fri 30 Oct 2026", "2026-10-16" or "16/10/2026".
+function parseDate(v) {
+  const s = String(v ?? '').trim();
+  let m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (m) return m[0];
+  m = s.match(/^(?:[A-Za-z]{3},?\s+)?(\d{1,2})\s+([A-Za-z]{3})[a-z]*\s+(\d{4})$/);
+  if (m) { const mi = MONTHS.findIndex(x => x.toLowerCase() === m[2].toLowerCase()); if (mi >= 0) return `${m[3]}-${pad(mi + 1)}-${pad(+m[1])}`; }
+  m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (m) return `${m[3]}-${pad(+m[2])}-${pad(+m[1])}`;
+  return null;
+}
+// "$1,057.35", "-$39.90", "($40)", "12.0%", "3062.42" → numbers; blank → null
+function num(v) {
+  if (typeof v === 'number') return v;
+  let s = String(v ?? '').trim();
+  if (!s) return null;
+  const neg = /^\(.*\)$/.test(s) || s.startsWith('-');
+  const pct = s.endsWith('%');
+  s = s.replace(/[()$,%\s-]/g, '');
+  const n = parseFloat(s);
+  if (!Number.isFinite(n)) return null;
+  return (neg ? -n : n) / (pct ? 100 : 1);
+}
+const bool = v => String(v ?? '').trim().toUpperCase() === 'TRUE';
+
+const money = (n, dp = 0) => (n < 0 ? '-' : '') + '$' + Math.abs(n).toLocaleString('en-AU', { minimumFractionDigits: dp, maximumFractionDigits: dp });
+function fmtDate(s, opts = {}) {
+  const d = fromIso(s), y = d.getFullYear() !== new Date().getFullYear();
+  return d.toLocaleDateString('en-AU', { weekday: opts.weekday === false ? undefined : 'short', day: 'numeric', month: 'short', year: y || opts.year ? 'numeric' : undefined });
+}
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+/* ---------- Proton Seasons theme (shared with Jackets & Manuscripts) ---------- */
+const MC = ['#e8935a','#e07a7a','#d9738f','#c573b4','#a674e0','#7f6cf5','#6a7ff0','#5591e0','#3fa4b8','#43ad8f','#7bae6a','#d6a345'];
+const BASE = { bg:'#16141f', surface:'#1e1b2b', raise:'#2a2640', line:'#353050' };
+const hexRgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+const mix = (a, b, t) => '#' + hexRgb(a).map((v, i) => Math.round(v + (hexRgb(b)[i] - v) * t).toString(16).padStart(2, '0')).join('');
+function dayColour(isoDate) {
+  const y = +isoDate.slice(0, 4), m = +isoDate.slice(5, 7) - 1, d = +isoDate.slice(8, 10);
+  const len = new Date(y, m + 1, 0).getDate();
+  return mix(MC[m], MC[(m + 1) % 12], ((d - 1) / (len - 1)) * 0.6);
+}
+function applyTheme() {
+  const t = today(), m = +t.slice(5, 7) - 1, c = dayColour(t), r = document.documentElement.style;
+  r.setProperty('--accent', c);
+  r.setProperty('--accent-next', MC[(m + 1) % 12]);
+  r.setProperty('--bg', mix(BASE.bg, c, 0.05));
+  r.setProperty('--surface', mix(BASE.surface, c, 0.05));
+  r.setProperty('--raise', mix(BASE.raise, c, 0.06));
+  r.setProperty('--line', mix(BASE.line, c, 0.08));
+  const mk = document.querySelector('.cc-mark');
+  if (mk) {
+    const svg = mk.outerHTML.replace('class="cc-mark"', 'xmlns="http://www.w3.org/2000/svg"').replace(/currentColor/g, c);
+    let l = document.querySelector('link[rel="icon"]');
+    if (!l) { l = document.createElement('link'); l.rel = 'icon'; document.head.appendChild(l); }
+    l.type = 'image/svg+xml'; l.href = 'data:image/svg+xml,' + encodeURIComponent(svg);
+  }
+}
+const css = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+
+/* ---------- example data, shown until your sheet connects. Made-up figures, not yours. ---------- */
+const DEMO = {
+  settings: [['Key','Value'],['pay_anchor','2026-10-16'],['pay_cycle_days','14'],['pays_per_year','26'],['take_home_per_pay','$2,900.00'],['savings_target_monthly','$1,000.00'],['move_date',''],['up_live','FALSE']],
+  accounts: [['ID','Name','Institution','Type','Role','Per pay','Budget lines per pay','Gap','Status'],
+    ['EVERYDAY','Everyday account','Example Bank','Transaction','Everyday','','','','Active'],
+    ['SAVINGS','Savings account','Example Bank','Savings','Save','$300.00','','','Active'],
+    ['BILLS','Bills','Up','Saver','Bills','$900.00','$935.38','-$35.38','Planned'],
+    ['SUPER-A','Example Super','Example Super','Super','Super','','','','Active']],
+  budget: [['ID','Item','Type','Category','Amount','Frequency','Due','Phase','Paid from'],
+    ['L01','Rent','Bill','Housing','$450.00','Weekly','Monday','Ongoing','BILLS'],
+    ['L02','Phone','Bill','Phone & internet','$45.00','Monthly','8th','Ongoing','BILLS'],
+    ['L03','Electricity','Bill','Utilities','$120.00','Monthly','15th','Ongoing','BILLS'],
+    ['L04','Streaming','Subscription','Streaming','$18.00','Monthly','20th','Ongoing','BILLS'],
+    ['L05','Car insurance','Irregular','Insurance','$600.00','Yearly','','Ongoing','BILLS'],
+    ['L06','Groceries','Spending','Food','$150.00','Weekly','','Ongoing','EVERYDAY'],
+    ['L07','Fun money','Spending','Personal','$100.00','Weekly','','Ongoing','EVERYDAY']],
+  goals: [['ID','Goal','Target amount','Target date','Saver','Priority','Status'],
+    ['G01','Emergency fund','$6,000','30 Jun 2027','SAVINGS','1','Active'],
+    ['G02','Holiday','$3,000','1 Dec 2027','','2','Saving']],
+  instalments: [['Date','BuyList ID','Item','Amount','Paid'],
+    ['16 Oct 2026','B001','Headphones','$100.00','TRUE'],['30 Oct 2026','B001','Headphones','$100.00','FALSE'],
+    ['13 Nov 2026','B001','Headphones','$100.00','FALSE'],['27 Nov 2026','B001','Headphones','$100.00','FALSE']],
+  balances: [['Date','Account ID','Balance','Note'],['16 Oct 2026','EVERYDAY','$1,240.00',''],['16 Oct 2026','SAVINGS','$4,200.00',''],['1 Oct 2026','SUPER-A','$60,000.00','']]
+};
+
+/* ---------- state ---------- */
+const state = { mcp: null, google: false, live: false, demo: true, busy: false, range: 13, open: null, D: null };
+
+function table(values) {
+  const head = (values[0] || []).map(h => String(h).trim());
+  return values.slice(1).map((r, i) => {
+    const o = { _row: i + 2 };
+    head.forEach((h, j) => { o[h] = r[j] ?? ''; });
+    return o;
+  }).filter(o => Object.keys(o).some(k => k !== '_row' && String(o[k]).trim() !== ''));
+}
+
+function model(raw) {
+  const set = {};
+  for (const r of table(raw.settings)) set[String(r.Key).trim()] = r.Value;
+  const S = {
+    payAnchor: parseDate(set.pay_anchor), cycle: num(set.pay_cycle_days) || 14, paysPerYear: num(set.pays_per_year) || 26,
+    takeHome: num(set.take_home_per_pay) || 0, gross: num(set.gross_salary), sgRate: num(set.sg_rate),
+    targetMonthly: num(set.savings_target_monthly) || 0, bufferFloor: num(set.buffer_floor),
+    moveDate: parseDate(set.move_date), upLive: bool(set.up_live)
+  };
+  S.targetPerPay = S.targetMonthly * 12 / S.paysPerYear;
+  const accounts = table(raw.accounts).map(r => ({ id: String(r.ID).trim(), name: r.Name, institution: r.Institution, type: r.Type, role: r.Role,
+    perPay: num(r['Per pay']), lines: num(r['Budget lines per pay']), gap: num(r.Gap), status: String(r.Status || '').trim() }));
+  const budget = table(raw.budget).map(r => ({ id: r.ID, item: r.Item, type: String(r.Type).trim(), amount: num(r.Amount) || 0,
+    freq: String(r.Frequency).trim(), due: String(r.Due || '').trim(), phase: String(r.Phase || 'Ongoing').trim(), from: String(r['Paid from'] || '').trim() }));
+  const goals = table(raw.goals).map(r => ({ id: r.ID, name: r.Goal, target: num(r['Target amount']), date: parseDate(r['Target date']),
+    saver: String(r.Saver || '').trim(), priority: num(r.Priority), status: String(r.Status || '').trim() }));
+  const instalments = table(raw.instalments).map(r => ({ date: parseDate(r.Date), ref: r['BuyList ID'], item: r.Item, amount: num(r.Amount) || 0, paid: bool(r.Paid), row: r._row })).filter(x => x.date);
+  const balances = table(raw.balances).map(r => ({ date: parseDate(r.Date), account: String(r['Account ID']).trim(), balance: num(r.Balance), note: r.Note, row: r._row })).filter(x => x.date && x.balance !== null);
+  return { S, accounts, budget, goals, instalments, balances };
+}
+
+/* ---------- pay maths ---------- */
+function paydayOnOrBefore(D, d) {
+  const { payAnchor, cycle } = D.S;
+  return addDays(payAnchor, Math.floor(daysBetween(payAnchor, d) / cycle) * cycle);
+}
+function paysInMonth(D, payday) {
+  const ym = payday.slice(0, 7);
+  let first = payday;
+  while (addDays(first, -D.S.cycle).slice(0, 7) === ym) first = addDays(first, -D.S.cycle);
+  const list = [];
+  for (let p = first; p.slice(0, 7) === ym; p = addDays(p, D.S.cycle)) list.push(p);
+  return list;
+}
+// Is a Budget line running on this date? Until move / From move switch on Settings move_date.
+function active(D, l, date) {
+  const mv = D.S.moveDate;
+  if (l.phase === 'Until move') return !mv || date < mv;
+  if (l.phase === 'From move') return !!mv && date >= mv;
+  return true;
+}
+// Where a Budget line lands inside one pay cycle [start, end]
+function occurrences(D, l, start, end) {
+  const out = [], amt = l.amount, due = l.due.toLowerCase(), per = D.S.paysPerYear;
+  if (!amt) return out;
+  const group = l.type === 'Spending' ? 'spending' : 'bill';
+  const add = (date, amount, kind) => { if (active(D, l, date)) out.push({ date, label: l.item, amount, group, kind, from: l.from }); };
+  const days = []; for (let d = start; d <= end; d = addDays(d, 1)) days.push(d);
+  const wd = WEEKDAYS.indexOf(due);
+  const dueKind = group === 'spending' ? 'spend' : 'due';
+  if (l.freq === 'Weekly') {
+    if (wd >= 0) days.filter(d => fromIso(d).getDay() === wd).forEach(d => add(d, amt, dueKind));
+    else { add(start, amt, group === 'spending' ? 'spend' : 'aside'); add(addDays(start, 7), amt, group === 'spending' ? 'spend' : 'aside'); }
+  } else if (l.freq === 'Fortnightly') {
+    const d = wd >= 0 ? days.find(x => fromIso(x).getDay() === wd) : start;
+    add(d || start, amt, dueKind);
+  } else if (l.freq === 'Monthly') {
+    const m = due.match(/^(\d{1,2})(st|nd|rd|th)?$/);
+    if (m) {
+      const dom = +m[1];
+      days.filter(d => { const x = fromIso(d), len = new Date(x.getFullYear(), x.getMonth() + 1, 0).getDate(); return x.getDate() === Math.min(dom, len); })
+        .forEach(d => add(d, amt, dueKind));
+    } else add(start, amt * 12 / per, group === 'spending' ? 'spend' : 'aside');
+  } else {
+    const k = { Quarterly: 4, Yearly: 1 }[l.freq];
+    if (k) add(start, amt * k / per, group === 'spending' ? 'spend' : 'aside');
+  }
+  return out;
+}
+function forecast(D, n) {
+  const first = paydayOnOrBefore(D, today()), pays = [];
+  for (let i = 0; i < n; i++) {
+    const start = addDays(first, i * D.S.cycle), end = addDays(start, D.S.cycle - 1);
+    const items = [];
+    for (const l of D.budget) items.push(...occurrences(D, l, start, end));
+    for (const x of D.instalments) {
+      if (x.paid) continue;
+      if ((x.date >= start && x.date <= end) || (i === 0 && x.date < start))
+        items.push({ date: x.date, label: x.item + (x.date < start ? ' (overdue)' : ''), amount: x.amount, group: 'instalment', kind: 'due' });
+    }
+    items.sort((a, b) => a.date.localeCompare(b.date) || b.amount - a.amount);
+    const sum = g => items.filter(x => x.group === g).reduce((a, x) => a + x.amount, 0);
+    const bills = sum('bill'), spending = sum('spending'), inst = sum('instalment');
+    const month = paysInMonth(D, start);
+    pays.push({ start, end, items, bills, spending, inst, takeHome: D.S.takeHome, left: D.S.takeHome - bills - spending - inst,
+      move: !!D.S.moveDate && D.S.moveDate >= start && D.S.moveDate <= end, nth: month.indexOf(start) + 1, inMonth: month.length });
+  }
+  return pays;
+}
+const standing = (D, left) => left < 0 ? ['bad', 'Short'] : left < D.S.targetPerPay ? ['warn', 'Below target'] : ['good', 'On target'];
+function latestBalances(D) {
+  const m = new Map();
+  for (const b of D.balances) { const c = m.get(b.account); if (!c || b.date >= c.date) m.set(b.account, b); }
+  return m;
+}
+
+/* ---------- rendering ---------- */
+const $ = id => document.getElementById(id);
+let leftChart;
+
+function renderAll() {
+  applyTheme();
+  $('todayLabel').textContent = new Date().toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'long' });
+  const D = state.D; if (!D || !D.S.payAnchor) return;
+  renderDash(D); renderForecast(D); renderCheckin(D);
+}
+
+function renderDash(D) {
+  const t = today(), pays = forecast(D, 26), cur = pays[0];
+  const next = cur.start >= t ? cur.start : addDays(cur.start, D.S.cycle);
+  const nextMonth = paysInMonth(D, next), days = daysBetween(t, next);
+  $('sPay').textContent = fmtDate(next, { weekday: false });
+  $('sPaySub').textContent = (days === 0 ? 'Today' : days === 1 ? 'Tomorrow' : `In ${days} days`) +
+    (nextMonth.length === 3 ? ` · ${ORD(nextMonth.indexOf(next) + 1)} of 3 pays in ${FULL_MONTHS[+next.slice(5, 7) - 1]}` : '');
+
+  const [cls, label] = standing(D, cur.left);
+  $('sLeft').textContent = money(cur.left);
+  $('sLeftSub').innerHTML = `<span class="chip ${cls}">${label}</span> target ${money(D.S.targetPerPay)} · pay of ${fmtDate(cur.start, { weekday: false })}`;
+
+  const owed = D.instalments.filter(x => !x.paid), owedSum = owed.reduce((a, x) => a + x.amount, 0);
+  $('sOwed').textContent = money(owedSum);
+  const nx = owed.slice().sort((a, b) => a.date.localeCompare(b.date));
+  $('sOwedSub').textContent = nx.length ? `Next ${money(nx[0].amount)} on ${fmtDate(nx[0].date, { weekday: false })} · clear by ${fmtDate(nx[nx.length - 1].date, { weekday: false, year: true })}` : 'Nothing owed';
+
+  const lb = latestBalances(D), roles = new Map(D.accounts.map(a => [a.id, a]));
+  let cash = 0, cashN = 0, sup = 0, supN = 0, oldest = null;
+  for (const [id, b] of lb) {
+    const a = roles.get(id); if (!a || a.status === 'Closed') continue;
+    if (a.role === 'Super') { sup += b.balance; supN++; } else { cash += b.balance; cashN++; if (!oldest || b.date < oldest) oldest = b.date; }
+  }
+  $('sCash').textContent = cashN ? money(cash) : '–';
+  $('sCashSub').textContent = (cashN ? `${cashN} account${cashN > 1 ? 's' : ''}, oldest check-in ${fmtDate(oldest, { weekday: false })}` : 'No check-in yet. Add one on the Check-in tab.') +
+    (supN ? ` · Super ${money(sup)}` : '');
+
+  renderChart(D, pays);
+  renderGoals(D, lb);
+  renderSavers(D);
+  renderSoon(D, pays);
+}
+
+function renderChart(D, pays) {
+  if (!window.Chart) return;
+  Chart.defaults.font.family = css('--body'); Chart.defaults.color = css('--muted'); Chart.defaults.borderColor = css('--line');
+  const colour = v => v < 0 ? css('--danger') : v < D.S.targetPerPay ? css('--warn') : css('--accent');
+  const labels = pays.map(p => p.start), data = pays.map(p => Math.round(p.left));
+  const cfg = {
+    data: { labels, datasets: [
+      { type: 'line', label: 'Savings target', data: pays.map(() => Math.round(D.S.targetPerPay)), borderColor: css('--accent-2'), borderWidth: 2, borderDash: [5, 4], pointRadius: 0, order: 0 },
+      { type: 'bar', label: 'Left over', data, backgroundColor: data.map(colour), borderRadius: 4, borderSkipped: 'start', barPercentage: .82, categoryPercentage: .9, order: 1 }
+    ] },
+    options: {
+      responsive: true, maintainAspectRatio: false, animation: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: { legend: { display: false }, tooltip: { callbacks: {
+        title: items => { const p = pays[items[0].dataIndex]; return fmtDate(p.start) + (p.move ? ' · move' : '') + (p.inMonth === 3 ? ` · ${ORD(p.nth)} of 3 pays` : ''); },
+        label: it => `${it.dataset.label}: ${money(it.raw)}`
+      } } },
+      scales: {
+        x: { grid: { display: false }, ticks: { maxRotation: 0, autoSkip: true, maxTicksLimit: 9, callback: (v, i) => { const d = fromIso(labels[i]); return `${d.getDate()} ${MONTHS[d.getMonth()]}`; } } },
+        y: { grid: { color: css('--line') }, border: { display: false }, ticks: { callback: v => money(v), maxTicksLimit: 6 } }
+      }
+    }
+  };
+  if (leftChart) { leftChart.data = cfg.data; leftChart.options = cfg.options; leftChart.update(); }
+  else leftChart = new Chart($('leftChart'), cfg);
+}
+
+function renderGoals(D, lb) {
+  const t = today(), accts = new Map(D.accounts.map(a => [a.id, a]));
+  const rows = D.goals.filter(g => !['Done', 'Dropped'].includes(g.status)).sort((a, b) => (a.priority ?? 99) - (b.priority ?? 99));
+  $('goalsSub').textContent = rows.length ? `${rows.length} open` : '';
+  if (!rows.length) { $('goalsList').innerHTML = '<div class="empty">No open goals. Add them on the Goals tab of your sheet.</div>'; return; }
+  $('goalsList').innerHTML = rows.map(g => {
+    // A goal's Saver can list several accounts ("SUPER-AUS, SUPER-IOOF"); saved is their latest balances added up
+    const ids = g.saver.split(/[,;]\s*/).filter(Boolean), found = ids.filter(id => lb.get(id));
+    const saved = found.length ? found.reduce((a, id) => a + lb.get(id).balance, 0) : null;
+    const acct = ids.length === 1 ? accts.get(ids[0]) : null;
+    const pays = g.date ? Math.max(0, Math.floor(daysBetween(t, g.date) / D.S.cycle)) : null;
+    let chip = '', line = '';
+    const allSuper = ids.length && ids.every(id => (accts.get(id) || {}).role === 'Super');
+    if (g.target && allSuper) {
+      // Super grows from employer contributions and returns, not from pay, so show the Super Guarantee instead
+      const sg = D.S.gross && D.S.sgRate ? D.S.gross * D.S.sgRate / D.S.paysPerYear : null;
+      chip = `<span class="chip plain">${esc(g.status || 'Open')}</span>`;
+      line = `${saved === null ? 'No balance yet' : money(saved) + ' across ' + found.length + ' fund' + (found.length > 1 ? 's' : '')} of ${money(g.target)}` +
+        (sg ? ` · employer adds about ${money(sg)} a pay before tax` : '');
+    } else if (!g.target) { chip = `<span class="chip plain">${esc(g.status || 'Date only')}</span>`; line = g.date ? `By ${fmtDate(g.date, { weekday: false, year: true })}` : ''; }
+    else {
+      const have = saved ?? 0, need = Math.max(0, g.target - have);
+      const perPay = pays ? need / pays : need;
+      const alloc = acct && acct.perPay ? acct.perPay : null;
+      if (need === 0) chip = '<span class="chip good">Reached</span>';
+      else if (alloc === null) chip = `<span class="chip plain">${esc(g.status || 'Open')}</span>`;
+      else chip = alloc >= perPay ? '<span class="chip good">On track</span>' : '<span class="chip warn">Behind</span>';
+      line = `${saved === null ? 'No balance yet' : money(have) + ' saved'} of ${money(g.target)}` +
+        (g.date ? ` · by ${fmtDate(g.date, { weekday: false, year: true })} needs ${money(perPay)}/pay` : '') +
+        (alloc !== null ? ` · ${esc(acct.name)} gets ${money(alloc)}/pay` : '');
+    }
+    const pct = g.target ? Math.min(100, ((saved ?? 0) / g.target) * 100) : 0;
+    return `<div class="goal"><div class="row"><span class="name">${esc(g.name)}</span>${chip}</div>
+      ${g.target ? `<div class="bar" aria-hidden="true"><i style="width:${pct}%"></i></div>` : ''}
+      <div class="muted small tnum">${line}</div></div>`;
+  }).join('');
+}
+
+function renderSavers(D) {
+  const rows = D.accounts.filter(a => a.gap !== null);
+  if (!rows.length) { $('saversList').innerHTML = '<li><span></span><span class="empty">No Savers with bills assigned yet.</span><span></span></li>'; return; }
+  $('saversList').innerHTML = rows.map(a => {
+    const g = Math.round(a.gap * 100) / 100;
+    const chip = g < 0 ? `<span class="chip bad">${money(-g, 2)} short</span>` : g > 0 ? `<span class="chip plain">${money(g, 2)} spare</span>` : '<span class="chip good">Covered</span>';
+    return `<li><span class="when tnum">${money(a.perPay ?? 0, 2)}</span><span class="what">${esc(a.name)}<div class="muted small tnum">Bills need ${money(a.lines ?? 0, 2)} a pay</div></span><span>${chip}</span></li>`;
+  }).join('');
+}
+
+function renderSoon(D, pays) {
+  const t = today(), until = addDays(t, 21), ev = [];
+  for (const p of pays) {
+    if (p.start > until) break;
+    if (p.start >= t) ev.push({ date: p.start, cls: 'pay', what: 'Payday', amt: '+' + money(D.S.takeHome) });
+    for (const x of p.items) if (x.kind === 'due' && x.date >= t && x.date <= until) ev.push({ date: x.date, what: x.label + (x.group === 'instalment' ? ' (Pay-in-4)' : ''), amt: money(x.amount, 2) });
+  }
+  if (D.S.moveDate && D.S.moveDate >= t && D.S.moveDate <= until) ev.push({ date: D.S.moveDate, cls: 'marker', what: 'Move date', amt: '' });
+  ev.sort((a, b) => a.date.localeCompare(b.date) || (a.cls === 'pay' ? -1 : 0));
+  $('soonList').innerHTML = ev.length ? ev.map(e => `<li class="${e.cls || ''}"><span class="when">${fmtDate(e.date, { weekday: true })}</span><span class="what">${esc(e.what)}</span><span class="amt tnum">${e.amt}</span></li>`).join('')
+    : '<li><span></span><span class="empty">Nothing dated in the next 3 weeks.</span><span></span></li>';
+}
+
+function renderForecast(D) {
+  const pays = forecast(D, state.range);
+  document.querySelectorAll('.range-tabs button').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.range === state.range)));
+  const total = pays.reduce((a, p) => a + Math.max(0, p.left), 0), avg = pays.reduce((a, p) => a + p.left, 0) / pays.length;
+  const low = pays.reduce((a, p) => (p.left < a.left ? p : a), pays[0]);
+  const under = pays.filter(p => p.left < D.S.targetPerPay).length;
+  $('fTotal').textContent = money(total);
+  $('fTotalSub').textContent = `${pays.length} pays from ${fmtDate(pays[0].start, { weekday: false })}`;
+  $('fAvg').textContent = money(avg);
+  $('fAvgSub').textContent = `Target ${money(D.S.targetPerPay)} · ${under ? under + ' pay' + (under > 1 ? 's' : '') + ' below' : 'every pay meets it'}`;
+  $('fLow').textContent = money(low.left);
+  $('fLowSub').textContent = `${fmtDate(low.start)}: ` + (low.inst ? `${money(low.inst)} of Pay-in-4` : `${money(low.bills)} of bills`);
+  $('fcBody').innerHTML = pays.map((p, i) => {
+    const [cls, label] = standing(D, p.left), open = state.open === p.start;
+    const tags = [i === 0 ? '<span class="chip accent">This pay</span>' : '', p.inMonth === 3 ? `<span class="chip plain">${ORD(p.nth)} of 3 pays</span>` : '', p.move ? '<span class="chip warn">Move</span>' : ''].join('');
+    const row = `<tr class="row${open ? ' open' : ''}" data-start="${p.start}" tabindex="0" aria-expanded="${open}">
+      <td><div class="date">${fmtDate(p.start)}</div>${tags ? `<div class="tags">${tags}</div>` : ''}</td>
+      <td class="r tnum">${money(p.takeHome)}</td><td class="r tnum">${money(p.bills)}</td><td class="r tnum">${money(p.spending)}</td>
+      <td class="r tnum">${p.inst ? money(p.inst) : '–'}</td><td class="r tnum left">${money(p.left)}</td><td><span class="chip ${cls}">${label}</span></td></tr>`;
+    if (!open) return row;
+    const list = g => { const xs = p.items.filter(x => x.group === g); return xs.length ? xs.map(x => `<li><span>${esc(x.label)}<span class="muted"> · ${x.kind === 'aside' ? 'set aside' : (x.kind === 'spend' ? 'week of ' : '') + fmtDate(x.date, { weekday: false })}</span></span><span class="tnum">${money(x.amount, 2)}</span></li>`).join('') : '<li class="muted">None</li>'; };
+    return row + `<tr class="detail"><td colspan="7"><div class="detail-grid">
+      <div><h3>Bills</h3><ul>${list('bill')}</ul></div><div><h3>Spending</h3><ul>${list('spending')}</ul></div><div><h3>Pay-in-4</h3><ul>${list('instalment')}</ul></div></div></td></tr>`;
+  }).join('');
+}
+
+function renderCheckin(D) {
+  if (!$('ciDate').value) $('ciDate').value = today();
+  const lb = latestBalances(D);
+  const accts = D.accounts.filter(a => a.status === 'Active' || (D.S.upLive && a.status === 'Planned'));
+  const prev = {}; document.querySelectorAll('#ciRows input').forEach(i => { prev[i.id] = i.value; });
+  $('ciRows').innerHTML = accts.map(a => {
+    const b = lb.get(a.id), id = 'bal-' + a.id.replace(/[^A-Za-z0-9_-]/g, '_');
+    return `<div class="ci-row"><div><div class="nm">${esc(a.name)}</div><div class="muted small tnum">${b ? `Last ${money(b.balance, 2)} on ${fmtDate(b.date, { weekday: false })}` : 'No check-in yet'}</div></div>
+      <input type="number" step="0.01" inputmode="decimal" id="${id}" data-account="${esc(a.id)}" aria-label="${esc(a.name)} balance" value="${esc(prev[id] || '')}"></div>`;
+  }).join('') || '<div class="empty">No active accounts on the Accounts tab.</div>';
+  $('ciSave').disabled = !isLive();
+  if (!isLive()) $('ciMsg').textContent = state.demo ? 'Connect your sheet to save check-ins.' : 'Saving needs the live connection.';
+
+  const t = today(), unpaid = D.instalments.filter(x => !x.paid).sort((a, b) => a.date.localeCompare(b.date));
+  $('instSub').textContent = unpaid.length ? `${unpaid.length} left · ${money(unpaid.reduce((a, x) => a + x.amount, 0))}` : '';
+  $('instList').innerHTML = unpaid.slice(0, 8).map(x => `<li><span class="when">${fmtDate(x.date, { weekday: false })}</span>
+    <span class="what">${esc(x.item)}<div class="muted small tnum">${money(x.amount, 2)}${x.date < t ? ' · <span style="color:var(--danger)">due date passed</span>' : ''}</div></span>
+    <span><button class="btn btn-sm" type="button" data-paid="${x.row}" ${isLive() ? '' : 'disabled'}>Mark paid</button></span></li>`).join('')
+    || '<li><span></span><span class="empty">No Pay-in-4 payments left.</span><span></span></li>';
+
+  const names = new Map(D.accounts.map(a => [a.id, a.name]));
+  const hist = D.balances.slice().sort((a, b) => b.date.localeCompare(a.date) || b.row - a.row).slice(0, 12);
+  $('histList').innerHTML = hist.map(b => `<li><span class="when">${fmtDate(b.date, { weekday: false })}</span><span class="what">${esc(names.get(b.account) || b.account)}${b.note ? `<div class="muted small">${esc(b.note)}</div>` : ''}</span><span class="amt tnum">${money(b.balance, 2)}</span></li>`).join('')
+    || '<li><span></span><span class="empty">No check-ins yet.</span><span></span></li>';
+}
+
+/* ---------- tabs and controls ---------- */
+const TABS = ['dash', 'forecast', 'checkin'];
+function showTab(name) {
+  for (const t of TABS) { $('tab-' + t).setAttribute('aria-selected', String(t === name)); $('view-' + t).hidden = t !== name; }
+  try { localStorage.setItem('cc-tab', name); } catch (e) {}
+  if (name === 'dash' && leftChart) leftChart.resize();
+}
+TABS.forEach(t => $('tab-' + t).addEventListener('click', () => showTab(t)));
+document.querySelectorAll('.range-tabs button').forEach(b => b.addEventListener('click', () => { state.range = +b.dataset.range; state.open = null; if (state.D) renderForecast(state.D); }));
+function toggleRow(tr) { if (!tr) return; state.open = state.open === tr.dataset.start ? null : tr.dataset.start; renderForecast(state.D); const again = document.querySelector(`tr.row[data-start="${tr.dataset.start}"]`); if (again) again.focus(); }
+$('fcBody').addEventListener('click', e => toggleRow(e.target.closest('tr.row')));
+$('fcBody').addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleRow(e.target.closest('tr.row')); } });
+
+/* ---------- connection ---------- */
+const cfg = {
+  get() { try { return JSON.parse(localStorage.getItem(CFG_KEY) || 'null') || {}; } catch (e) { return {}; } },
+  set(c) { try { localStorage.setItem(CFG_KEY, JSON.stringify({ ...cfg.get(), ...c })); } catch (e) {} }
+};
+const sheetId = () => cfg.get().sheetId || '';
+const isLive = () => !!state.mcp && !state.demo && !(state.google && !google_.valid());
+function setStatus(kind, text) { $('status').dataset.state = kind; $('statusText').textContent = text; }
+function notice(text, kind, action) {
+  const n = $('notice'); if (!text) { n.hidden = true; return; }
+  n.innerHTML = `<span>${esc(text)}</span>` + (action ? `<button class="btn btn-sm" type="button" id="noticeAct">${esc(action.label)}</button>` : '');
+  n.dataset.kind = kind || ''; n.hidden = false;
+  if (action) $('noticeAct').addEventListener('click', action.run);
+}
+const DEMO_NOTE = 'You\'re looking at example figures, not yours. Connect your budget sheet to see your own.';
+function explain(err) {
+  switch (err && err.code) {
+    case 'server_not_connected': return 'Google Sheets isn\'t connected for your account. Add it in claude.ai Settings → Connectors, then press Refresh.';
+    case 'google_signin': return 'Your Google sign-in has expired. Press Connect to sign in again.';
+    case 'needs_reauth': return 'Your Google Sheets connection has expired. Reconnect it in claude.ai Settings → Connectors, then press Refresh.';
+    case 'selection_required': return 'You have more than one Google Sheets connector. Choose one when Claude asks, then press Refresh.';
+    case 'not_in_manifest': case 'consent_required': case 'approval_required': return 'This page isn\'t allowed to use Google Sheets yet. Allow it from the page\'s permissions, then press Refresh.';
+    case 'blocked_by_policy': return 'Your organisation blocks Google Sheets for this page.';
+    case 'server_unavailable': return 'Google Sheets didn\'t answer in time. Press Refresh to try again.';
+    case 'tool_error': return 'Google Sheets reported a problem: ' + (err.message || 'unknown error') + '. Check the sheet link under Sheet.';
+    case 'not_granted': case 'capability_disabled': case 'capability_removed': return 'This view can\'t reach your connectors. Open the page in Claude to connect your sheet.';
+    default: return 'Couldn\'t reach your sheet' + (err && err.message ? ': ' + err.message : '') + '. Press Refresh to try again.';
+  }
+}
+
+async function readRange(range) {
+  const res = await state.mcp.callTool(SERVER, 'get_values', { spreadsheetId: sheetId(), range }, { cache: false });
+  const p = res.payload;
+  return (p && Array.isArray(p.values)) ? p.values : [];
+}
+
+async function refresh() {
+  if (!state.mcp) return;
+  if (!sheetId()) { openSetup(); return; }
+  setStatus('loading', 'Loading from your sheet…');
+  $('refreshBtn').disabled = true;
+  try {
+    const [settings, accounts, budget, goals, instalments, balances] = await Promise.all([
+      readRange('Settings!A1:D80'), readRange('Accounts!A1:J100'), readRange('Budget!A1:M300'),
+      readRange('Goals!A1:I60'), readRange('Instalments!A1:F400'), readRange('Balances!A1:D5000')
+    ]);
+    const D = model({ settings, accounts, budget, goals, instalments, balances });
+    if (!D.S.payAnchor) throw { code: 'tool_error', message: 'the Settings tab has no pay_anchor date' };
+    state.D = D; state.demo = false; state.live = true;
+    notice('');
+    setStatus('live', 'Live · updated ' + new Date().toLocaleTimeString('en-AU', { hour: 'numeric', minute: '2-digit' }));
+    renderAll();
+  } catch (err) {
+    setStatus('error', state.live ? 'Couldn\'t refresh · showing the last data loaded' : 'Not connected · showing example figures');
+    notice(explain(err), 'error');
+  } finally { $('refreshBtn').disabled = false; }
+}
+
+async function write(tool, input) {
+  return state.mcp.callTool(SERVER, tool, { spreadsheetId: sheetId(), ...input }, { cache: false });
+}
+
+$('ciForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  if (!isLive() || state.busy) return;
+  const date = $('ciDate').value, note = $('ciNote').value.trim();
+  if (!date) { $('ciMsg').textContent = 'Pick the date of the check-in.'; return; }
+  const rows = [];
+  for (const i of document.querySelectorAll('#ciRows input')) {
+    if (i.value.trim() === '') continue;
+    const v = Number(i.value);
+    if (!Number.isFinite(v)) { $('ciMsg').textContent = 'One of the balances isn\'t a number.'; i.focus(); return; }
+    rows.push([date, i.dataset.account, v, note]);
+  }
+  if (!rows.length) { $('ciMsg').textContent = 'Enter at least one balance.'; return; }
+  state.busy = true; $('ciSave').disabled = true; $('ciMsg').textContent = 'Saving…';
+  try {
+    await write('append_values', { range: 'Balances!A1', values: rows });
+    document.querySelectorAll('#ciRows input').forEach(i => { i.value = ''; }); $('ciNote').value = '';
+    $('ciMsg').textContent = `Saved ${rows.length} balance${rows.length > 1 ? 's' : ''}.`;
+    await refresh();
+  } catch (err) {
+    $('ciMsg').textContent = err && (err.code === 'server_unavailable' || err.code === 'upstream_error')
+      ? 'The sheet didn\'t confirm the save. Check the Balances tab before saving again.' : explain(err);
+  } finally { state.busy = false; $('ciSave').disabled = !isLive(); }
+});
+
+$('instList').addEventListener('click', async e => {
+  const b = e.target.closest('button[data-paid]'); if (!b || !isLive() || state.busy) return;
+  state.busy = true; b.disabled = true; b.textContent = 'Saving…';
+  try { await write('update_values', { range: `Instalments!E${b.dataset.paid}`, values: [[true]] }); await refresh(); }
+  catch (err) { b.textContent = 'Mark paid'; b.disabled = false; notice(explain(err), 'error'); }
+  finally { state.busy = false; }
+});
+
+/* ---------- setup ---------- */
+function openSetup() {
+  $('setupSheet').value = sheetId() ? `https://docs.google.com/spreadsheets/d/${sheetId()}/edit` : '';
+  $('setupClientWrap').hidden = !state.google;
+  $('setupClient').value = google_.clientId();
+  $('setupMsg').textContent = '';
+  if (!$('setupDlg').open) $('setupDlg').showModal();
+}
+$('setupBtn').addEventListener('click', openSetup);
+$('setupClose').addEventListener('click', () => $('setupDlg').close());
+$('setupForm').addEventListener('submit', e => {
+  const raw = $('setupSheet').value.trim(), m = raw.match(/\/d\/([A-Za-z0-9_-]{20,})/) || raw.match(/^([A-Za-z0-9_-]{20,})$/);
+  if (!m) { e.preventDefault(); $('setupMsg').textContent = 'That doesn\'t look like a Google Sheets link.'; return; }
+  const c = { sheetId: m[1] };
+  if (state.google) {
+    const id = $('setupClient').value.trim();
+    if (!/\.apps\.googleusercontent\.com$/.test(id)) { e.preventDefault(); $('setupMsg').textContent = 'That doesn\'t look like a Client ID.'; return; }
+    c.clientId = id; google_.client = null;
+  }
+  cfg.set(c);
+  if (state.google && !google_.valid()) googleConnect(); else refresh();
+});
+$('refreshBtn').addEventListener('click', () => !sheetId() ? openSetup() : state.google && !google_.valid() ? googleConnect() : refresh());
+
+/* ---------- Google Sheets direct (GitHub Pages and other hosts outside claude.ai) ----------
+   Same calls as the claude.ai connector, sent straight to the Sheets API with a Google sign-in.
+   The token is shared with Jackets & Manuscripts on the same site, so signing in to one signs in both. */
+const google_ = {
+  tokKey: 'jm-google-token', client: null,
+  clientId() {
+    if (cfg.get().clientId) return cfg.get().clientId;
+    try { return (JSON.parse(localStorage.getItem('mbl_config') || 'null') || {}).clientId || ''; } catch (e) { return ''; }
+  },
+  tok() { try { return JSON.parse(localStorage.getItem(this.tokKey) || 'null'); } catch (e) { return null; } },
+  valid() { const t = this.tok(); return !!(t && t.exp > Date.now()); },
+  async callTool(server, tool, input) {
+    if (!this.valid()) { googleSignedOut(); throw { code: 'google_signin' }; }
+    const base = `https://sheets.googleapis.com/v4/spreadsheets/${input.spreadsheetId}/values/${encodeURIComponent(input.range)}`;
+    const url = tool === 'get_values' ? base
+      : tool === 'append_values' ? base + ':append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS'
+      : base + '?valueInputOption=USER_ENTERED';
+    const opts = { method: tool === 'get_values' ? 'GET' : tool === 'append_values' ? 'POST' : 'PUT', headers: { Authorization: 'Bearer ' + this.tok().t } };
+    if (tool !== 'get_values') { opts.headers['Content-Type'] = 'application/json'; opts.body = JSON.stringify({ values: input.values }); }
+    const res = await fetch(url, opts);
+    if (res.status === 401) { try { localStorage.removeItem(this.tokKey); } catch (e) {} googleSignedOut(); throw { code: 'google_signin' }; }
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) throw { code: 'tool_error', message: (body.error && body.error.message) || 'HTTP ' + res.status };
+    return { payload: body };
+  }
+};
+function googleSignedOut() {
+  setStatus('error', state.live ? 'Signed out · showing the last data loaded' : 'Not connected · showing example figures');
+  $('refreshBtn').textContent = 'Connect';
+}
+function loadGis() {
+  return new Promise((ok, fail) => {
+    if (window.google && google.accounts && google.accounts.oauth2) return ok();
+    const s = document.createElement('script');
+    s.src = 'https://accounts.google.com/gsi/client'; s.async = true;
+    s.onload = () => ok(); s.onerror = () => fail(new Error('Google sign-in didn\'t load'));
+    document.head.appendChild(s);
+  });
+}
+// Runs from a click, and stays synchronous once Google's script has loaded, so the sign-in popup isn't blocked
+function googleConnect() {
+  const id = google_.clientId();
+  if (!id || !sheetId()) { openSetup(); return; }
+  if (!(window.google && google.accounts && google.accounts.oauth2)) { loadGis().then(googleConnect, err => notice(err.message, 'error')); return; }
+  try {
+    if (!google_.client) google_.client = google.accounts.oauth2.initTokenClient({
+      client_id: id, scope: 'https://www.googleapis.com/auth/spreadsheets',
+      callback: r => {
+        if (r.error) { notice('Google sign-in failed: ' + r.error, 'error'); return; }
+        try { localStorage.setItem(google_.tokKey, JSON.stringify({ t: r.access_token, exp: Date.now() + (r.expires_in - 120) * 1000 })); } catch (e) {}
+        $('refreshBtn').textContent = 'Refresh';
+        refresh();
+      },
+      error_callback: e => notice('Google sign-in was closed or blocked' + (e && e.type ? ' (' + e.type + ')' : '') + '. Press Connect to try again.', 'error')
+    });
+    google_.client.requestAccessToken({ prompt: '' });
+  } catch (err) { notice(err.message, 'error'); }
+}
+function googleBoot() {
+  state.google = true; state.mcp = google_;
+  loadGis().catch(() => {});
+  if (google_.valid() && sheetId()) { refresh(); return; }
+  googleSignedOut();
+  notice(DEMO_NOTE, 'demo', { label: 'Connect', run: googleConnect });
+}
+
+/* ---------- start ---------- */
+state.D = model(DEMO);
+renderAll();
+try { const t = localStorage.getItem('cc-tab'); if (TABS.includes(t)) showTab(t); } catch (e) {}
+setStatus('loading', 'Connecting to your sheet…');
+(async () => {
+  if (!(window.claude && window.claude.use)) { googleBoot(); return; }
+  const mcp = await window.claude.use('mcp');
+  if (!mcp) {
+    setStatus('error', 'Showing example figures');
+    notice('This view can\'t reach Google Sheets, so you\'re seeing example figures. Open the page in Claude to see your own.', 'demo');
+    return;
+  }
+  state.mcp = mcp;
+  if (!sheetId()) { setStatus('error', 'Not connected · showing example figures'); notice(DEMO_NOTE, 'demo', { label: 'Connect', run: openSetup }); return; }
+  refresh();
+})();
+</script>
