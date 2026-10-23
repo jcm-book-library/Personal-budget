@@ -18,7 +18,8 @@ Key/value pairs. Columns: `Key`, `Value`, `What it is`, `Source`.
 | `buffer_floor` | Lowest balance to keep after bills. |
 | `move_date` | Switches Budget lines from `Until move` to `From move`. |
 | `up_live` | `FALSE` until the Up accounts exist. While false, every line is paid from `EVERYDAY`. |
-| `cooling_off_threshold`, `cooling_off_days` | Wants above the threshold wait this many days. |
+| `cooling_off_threshold`, `cooling_off_days` | Wants (priority 2 and lower) above the threshold wait this many days, counted from `Date added`. |
+| `work_hours_per_week` | Turns a price into hours of work at your take-home hourly rate. |
 | `invest_return`, `inflation` | Assumptions for future cost and today's-dollar projections. |
 | `super_return_conservative`, `super_return_growth`, `super_target` | Super projection inputs. |
 | `birth_year`, `retirement_age`, `preservation_age` | Ages for projections. |
@@ -54,13 +55,14 @@ Key/value pairs. Columns: `Key`, `Value`, `What it is`, `Source`.
 `Saver` is the Accounts `ID` the goal is saved in.
 
 ## BuyList
-`ID`, `Item`, `Category`, `Subcategory`, `Room`, `Priority`, `Status`, `Buy window`, `Cost each`, `Qty`, `Total`, `Cost low`, `Cost premium`, `Final cost`, `Retailer`, `Pay method`, `Pay-in-4 eligible`, `Funded by`, `Date added`, `Link`, `Notes`, `Source`.
+`ID`, `Item`, `Category`, `Subcategory`, `Room`, `Priority`, `Status`, `Buy window`, `Cost each`, `Qty`, `Total`, `Cost low`, `Cost premium`, `Final cost`, `Retailer`, `Pay method`, `Pay-in-4 eligible`, `Funded by`, `Date added`, `Link`, `Notes`, `Source`, `Bought on`.
 
 - **Status:** `Idea`, `Planned`, `Waiting for sale`, `Bought`, `Dropped`.
 - **Priority:** 1 (highest) to 3. Values in between such as 1.5 are allowed.
-- **Buy window:** free text, for example `Pre-move`, `At move`, `Black Friday`, `Boxing Day`, `On sale`, `Q1 2027`, `12-24 months`.
+- **Buy window:** free text, for example `Pre-move`, `At move`, `Black Friday`, `Boxing Day`, `On sale`, `Q1 2027`, `Jan 2027`, `12-24 months`. A plain date means the item is planned for that payday, and the Pay forecast counts it (as four payments when `Pay method` is `Pay-in-4`).
 - **Total:** one formula in the header cell fills the whole column: `Final cost` if set, otherwise `Cost each × Qty`. The app should write to `Cost each`, `Qty` and `Final cost`, never to `Total`.
-- **Funded by:** an Accounts `ID`, or blank for everyday money.
+- **Funded by:** an Accounts `ID`, or blank for everyday money. The Buy list uses it to say which goal a purchase delays.
+- **Bought on:** the date it was marked bought in the app.
 
 ## Instalments
 `Date`, `BuyList ID`, `Item` (formula), `Amount`, `Paid` (checkbox), `Notes`.
@@ -96,4 +98,6 @@ Formulas only. The app ignores this tab and computes its own figures.
   - planned BuyList items assigned to that cycle.
 
   What's left is what goes to savings.
-- **Writes:** the app only appends rows or edits input cells. It never rewrites a whole tab and never writes to formula columns.
+- **Writes:** the app only appends rows or edits input cells. It never rewrites a whole tab and never writes to formula columns. On BuyList it writes `Status`, `Buy window`, `Pay method`, `Final cost`, `Bought on` and `Date added` for one row at a time, and adds new rows in two parts so the `Total` formula column is never touched.
+- **Sales:** only fixed-date sales are shown (Singles' Day 11 Nov, Black Friday to Cyber Monday, Boxing Day to 2 Jan, EOFY in June). Items marked `On sale` or `Waiting for sale` count towards the next one.
+- **Purchase impact:** the forecast is run with and without the item on the chosen payday. Pay-in-4 is four equal payments 14 days apart, the first on the day you buy.

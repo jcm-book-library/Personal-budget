@@ -16,6 +16,7 @@
   color-scheme:dark;
 }
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 body{background:var(--bg);color:var(--fg);font:15px/1.5 var(--body);margin:0}
 .wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
 h1,h2,.num{font-family:var(--display)}
@@ -104,7 +105,7 @@ table{width:100%;border-collapse:collapse;font-size:14px}
 th{background:var(--raise);text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:600;padding:9px 10px;white-space:nowrap}
 td{padding:9px 10px;border-top:1px solid var(--line);vertical-align:top}
 th.r,td.r{text-align:right}
-table.fc{min-width:720px}
+table.fc{min-width:820px}
 .fc tr.row{cursor:pointer}
 .fc tr.row:hover td{background:color-mix(in srgb,var(--accent) 6%,var(--surface))}
 .fc tr.open td{background:color-mix(in srgb,var(--accent) 9%,var(--surface))}
@@ -143,6 +144,67 @@ dialog::backdrop{background:rgba(8,6,14,.6)}
 .dlg-foot{border-top:1px solid var(--line)}
 .dlg-body{padding:16px 20px;display:grid;gap:14px}
 .dlg-body p{margin:0;font-size:14px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* buy list */
+.sale-strip{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(190px,1fr);gap:12px;overflow-x:auto;padding-bottom:4px;margin-bottom:20px}
+.sale{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:12px 14px;display:grid;gap:2px;text-align:left;color:var(--fg)}
+.sale:hover{border-color:var(--muted)}
+.sale[aria-pressed="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,var(--surface))}
+.sale .nm{font-weight:700;font-family:var(--display)}
+.sale .dt{font-size:12px;color:var(--muted)}
+.sale .ct{font-size:13px;margin-top:4px}
+.sale .ct b{font-variant-numeric:tabular-nums}
+.buy-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px}
+.buy-bar input[type=search],.buy-bar select,.dlg-body select,.dlg-body textarea{font:inherit;font-size:14px;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:8px;padding:7px 10px;min-width:0}
+.buy-bar input[type=search]{flex:1 1 220px}
+.buy-bar input:focus,.buy-bar select:focus,.dlg-body select:focus,.dlg-body textarea:focus{border-color:var(--accent);outline:none}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.fchip{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:999px;padding:4px 12px;font-size:13px;font-weight:600}
+.fchip[aria-pressed="true"]{background:color-mix(in srgb,var(--accent) 24%,var(--surface));border-color:var(--accent);color:var(--fg)}
+.fchip .n{font-variant-numeric:tabular-nums;opacity:.7;margin-left:4px;font-weight:500}
+.buy-list{border:1px solid var(--line);border-radius:12px;background:var(--surface);overflow:hidden}
+.bi{display:grid;grid-template-columns:minmax(0,1fr) 150px 96px 190px;gap:14px;align-items:center;width:100%;padding:11px 14px;border:0;border-top:1px solid var(--line);background:transparent;color:var(--fg);text-align:left}
+.bi:first-child{border-top:0}
+.bi:hover{background:color-mix(in srgb,var(--accent) 6%,var(--surface))}
+.bi-name{font-weight:600;line-height:1.3;display:block}
+.bi-meta,.bi-when small{font-size:12px;color:var(--muted)}
+.bi-when{font-size:13px;line-height:1.3}
+.bi-cost{font-weight:700;text-align:right}
+.bi-cost small{display:block;font-weight:500;font-size:11px;color:var(--muted)}
+.bi-tags{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+@media (max-width:860px){.bi{grid-template-columns:minmax(0,1fr) auto}.bi-when{grid-column:1;grid-row:2}.bi-tags{grid-column:1/-1;justify-content:flex-start}}
+.more{display:flex;justify-content:center;padding:12px}
+
+dialog.wide{width:min(760px,calc(100vw - 32px))}
+.it-head{display:grid;gap:4px}
+.it-head h2{font-size:20px}
+.it-sec{display:grid;gap:10px;padding-top:14px;border-top:1px solid var(--line)}
+.it-sec:first-child{border-top:0;padding-top:0}
+.it-sec h3{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0;font-weight:600}
+.metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:600px){.metrics{grid-template-columns:minmax(0,1fr)}}
+.metric{background:var(--raise);border-radius:10px;padding:10px 12px;display:grid;gap:2px;min-width:0}
+.metric .v{font-family:var(--display);font-weight:700;font-size:20px;font-variant-numeric:tabular-nums}
+.metric .k{font-size:12px;color:var(--muted)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:0;background:transparent;color:var(--muted);padding:6px 12px;font-size:13px;font-weight:600}
+.seg button[aria-pressed="true"]{background:color-mix(in srgb,var(--accent) 28%,var(--surface));color:var(--fg)}
+.seg button:disabled{opacity:.4;cursor:default}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:end}
+.impact{list-style:none;margin:0;padding:0;display:grid;gap:6px;font-size:14px}
+.impact li{display:grid;grid-template-columns:110px minmax(0,1fr) auto;gap:10px;align-items:center}
+.impact .arrow{color:var(--muted)}
+.say{font-size:14px;margin:0}
+.say b{font-variant-numeric:tabular-nums}
+.actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.sub-form{display:flex;flex-wrap:wrap;gap:10px;align-items:end;background:var(--raise);border-radius:10px;padding:12px}
+.sub-form .field input{width:140px}
+.prices{list-style:none;margin:0;padding:0;display:grid;gap:4px;font-size:13px}
+.prices li{display:flex;justify-content:space-between;gap:10px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:600px){.grid2{grid-template-columns:minmax(0,1fr)}}
+.field input,.field select,.field textarea{width:100%}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
@@ -168,6 +230,7 @@ dialog::backdrop{background:rgba(8,6,14,.6)}
 
   <nav class="tabs" role="tablist" aria-label="Sections">
     <button class="tab" role="tab" id="tab-dash" aria-selected="true" aria-controls="view-dash" type="button">Dashboard</button>
+    <button class="tab" role="tab" id="tab-buy" aria-selected="false" aria-controls="view-buy" type="button">Buy list</button>
     <button class="tab" role="tab" id="tab-forecast" aria-selected="false" aria-controls="view-forecast" type="button">Pay forecast</button>
     <button class="tab" role="tab" id="tab-checkin" aria-selected="false" aria-controls="view-checkin" type="button">Check-in</button>
   </nav>
@@ -207,6 +270,34 @@ dialog::backdrop{background:rgba(8,6,14,.6)}
     </div>
   </div>
 
+  <!-- Buy list -->
+  <div id="view-buy" role="tabpanel" aria-labelledby="tab-buy" hidden>
+    <section class="stats" aria-label="Buy list summary">
+      <div class="stat lead"><span class="eyebrow">Still to buy</span><span class="num tnum" id="bTotal">–</span><span class="sub" id="bTotalSub"></span></div>
+      <div class="stat"><span class="eyebrow">Needs (priority 1)</span><span class="num tnum" id="bNeed">–</span><span class="sub" id="bNeedSub"></span></div>
+      <div class="stat"><span class="eyebrow">Timed for a sale</span><span class="num tnum" id="bWait">–</span><span class="sub" id="bWaitSub"></span></div>
+      <div class="stat"><span class="eyebrow">Not spent</span><span class="num tnum" id="bDropped">–</span><span class="sub" id="bDroppedSub"></span></div>
+    </section>
+    <h2 class="sr-only" id="salesTitle">Sales coming up</h2>
+    <div class="sale-strip" id="saleStrip" role="group" aria-labelledby="salesTitle"></div>
+    <div class="buy-bar">
+      <input type="search" id="bSearch" placeholder="Search items, retailers, notes" aria-label="Search the buy list">
+      <select id="bCat" aria-label="Category"></select>
+      <select id="bWindow" aria-label="When to buy"></select>
+      <select id="bSort" aria-label="Sort">
+        <option value="smart">Sort: priority, then when</option>
+        <option value="when">Sort: when to buy</option>
+        <option value="cost-desc">Sort: most expensive</option>
+        <option value="cost-asc">Sort: cheapest</option>
+        <option value="added">Sort: newest added</option>
+      </select>
+      <button class="btn btn-primary" type="button" id="bAdd">Add item</button>
+    </div>
+    <div class="chips" id="bStatus" role="group" aria-label="Status"></div>
+    <div class="buy-list" id="bList"></div>
+    <div class="more" id="bMore" hidden><button class="btn" type="button" id="bMoreBtn">Show more</button></div>
+  </div>
+
   <!-- Pay forecast -->
   <div id="view-forecast" role="tabpanel" aria-labelledby="tab-forecast" hidden>
     <div class="panel-head">
@@ -224,11 +315,11 @@ dialog::backdrop{background:rgba(8,6,14,.6)}
     </div>
     <div class="table-wrap">
       <table class="fc">
-        <thead><tr><th>Payday</th><th class="r">Take-home</th><th class="r">Bills</th><th class="r">Spending</th><th class="r">Pay-in-4</th><th class="r">Left over</th><th>Against target</th></tr></thead>
+        <thead><tr><th>Payday</th><th class="r">Take-home</th><th class="r">Bills</th><th class="r">Spending</th><th class="r">Pay-in-4</th><th class="r">Planned buys</th><th class="r">Left over</th><th>Against target</th></tr></thead>
         <tbody id="fcBody"></tbody>
       </table>
     </div>
-    <p class="muted small">Bills with a due date land in the pay they fall in. Yearly, quarterly and undated costs are spread evenly, as the amount to set aside each pay.</p>
+    <p class="muted small">Bills with a due date land in the pay they fall in. Yearly, quarterly and undated costs are spread evenly, as the amount to set aside each pay. Planned buys are Buy list items you've planned for a payday.</p>
   </div>
 
   <!-- Check-in -->
@@ -258,6 +349,32 @@ dialog::backdrop{background:rgba(8,6,14,.6)}
     </div>
   </div>
 </div>
+
+<dialog id="itemDlg" class="wide" aria-labelledby="itTitle">
+  <div class="dlg-head"><div class="it-head"><h2 id="itTitle">Item</h2><div class="muted small" id="itSub"></div></div><button class="btn" type="button" id="itClose">Close</button></div>
+  <div class="dlg-body" id="itBody"></div>
+  <div class="dlg-foot"><span class="muted small" id="itMsg" role="status"></span><span class="actions" id="itActions"></span></div>
+</dialog>
+
+<dialog id="addDlg" aria-labelledby="addTitle">
+  <form id="addForm" method="dialog" novalidate>
+    <div class="dlg-head"><h2 id="addTitle">Add to the buy list</h2><button class="btn" type="button" id="addClose">Close</button></div>
+    <div class="dlg-body">
+      <div class="field"><label for="addName">Item</label><input id="addName" type="text" required autocomplete="off"></div>
+      <div class="grid2">
+        <div class="field"><label for="addCat">Category</label><input id="addCat" type="text" list="catList" autocomplete="off"><datalist id="catList"></datalist></div>
+        <div class="field"><label for="addPri">Priority</label><select id="addPri"><option value="1">1 · need</option><option value="2" selected>2 · want</option><option value="3">3 · someday</option></select></div>
+        <div class="field"><label for="addCost">Cost each</label><input id="addCost" type="number" step="0.01" inputmode="decimal"></div>
+        <div class="field"><label for="addQty">Quantity</label><input id="addQty" type="number" step="1" min="1" value="1"></div>
+        <div class="field"><label for="addWindow">When to buy</label><input id="addWindow" type="text" list="windowList" placeholder="e.g. Black Friday, On sale, Jan 2027" autocomplete="off"><datalist id="windowList"></datalist></div>
+        <div class="field"><label for="addRetailer">Retailer</label><input id="addRetailer" type="text" autocomplete="off"></div>
+      </div>
+      <div class="field"><label for="addLink">Link</label><input id="addLink" type="text" inputmode="url" autocomplete="off" placeholder="https://…"></div>
+      <div class="field"><label for="addNotes">Notes</label><input id="addNotes" type="text" autocomplete="off"></div>
+    </div>
+    <div class="dlg-foot"><span class="muted small" id="addMsg" role="status"></span><button class="btn btn-primary" type="submit" id="addSave">Add item</button></div>
+  </form>
+</dialog>
 
 <dialog id="setupDlg" aria-labelledby="setupTitle">
   <form id="setupForm" method="dialog">
@@ -369,7 +486,15 @@ const DEMO = {
   instalments: [['Date','BuyList ID','Item','Amount','Paid'],
     ['16 Oct 2026','B001','Headphones','$100.00','TRUE'],['30 Oct 2026','B001','Headphones','$100.00','FALSE'],
     ['13 Nov 2026','B001','Headphones','$100.00','FALSE'],['27 Nov 2026','B001','Headphones','$100.00','FALSE']],
-  balances: [['Date','Account ID','Balance','Note'],['16 Oct 2026','EVERYDAY','$1,240.00',''],['16 Oct 2026','SAVINGS','$4,200.00',''],['1 Oct 2026','SUPER-A','$60,000.00','']]
+  balances: [['Date','Account ID','Balance','Note'],['16 Oct 2026','EVERYDAY','$1,240.00',''],['16 Oct 2026','SAVINGS','$4,200.00',''],['1 Oct 2026','SUPER-A','$60,000.00','']],
+  buylist: [['ID','Item','Category','Subcategory','Room','Priority','Status','Buy window','Cost each','Qty','Total','Cost low','Cost premium','Final cost','Retailer','Pay method','Pay-in-4 eligible','Funded by','Date added','Link','Notes','Source','Bought on'],
+    ['B001','Standing desk','Home','Furniture','Office','1','Planned','Black Friday','$900.00','1','$900.00','$400.00','$1,400.00','','Example Store','','Yes','','1 Oct 2026','','',''],
+    ['B002','Office chair','Home','Furniture','Office','1','Waiting for sale','On sale','$600.00','1','$600.00','','','','Example Store','','Yes','','1 Oct 2026','','',''],
+    ['B003','Rain jacket','Clothing','Outerwear','','2','Idea','','$280.00','1','$280.00','','','','','','','','10 Oct 2026','','',''],
+    ['B004','Board game','Entertainment','Games','','3','Waiting for sale','Boxing Day','$90.00','1','$90.00','','','','','','Yes','','20 Sep 2026','','',''],
+    ['B005','Coffee grinder','Home','Appliance','Kitchen','2','Dropped','','$250.00','1','$250.00','','','','','','','','1 Aug 2026','','',''],
+    ['B006','Headphones','Tech','Audio','','2','Bought','','$400.00','1','$400.00','','','$400.00','','Pay-in-4','Yes','','1 Sep 2026','','','','16 Oct 2026']],
+  pricelog: [['Date','BuyList ID','Item','Price','Retailer','Link','Notes'],['5 Oct 2026','B002','Office chair','$650.00','Example Store','',''],['19 Oct 2026','B002','Office chair','$590.00','Other Store','','']]
 };
 
 /* ---------- state ---------- */
@@ -391,7 +516,9 @@ function model(raw) {
     payAnchor: parseDate(set.pay_anchor), cycle: num(set.pay_cycle_days) || 14, paysPerYear: num(set.pays_per_year) || 26,
     takeHome: num(set.take_home_per_pay) || 0, gross: num(set.gross_salary), sgRate: num(set.sg_rate),
     targetMonthly: num(set.savings_target_monthly) || 0, bufferFloor: num(set.buffer_floor),
-    moveDate: parseDate(set.move_date), upLive: bool(set.up_live)
+    moveDate: parseDate(set.move_date), upLive: bool(set.up_live),
+    coolThreshold: num(set.cooling_off_threshold) ?? 150, coolDays: num(set.cooling_off_days) ?? 30,
+    investReturn: num(set.invest_return) ?? 0.07, inflation: num(set.inflation) ?? 0.025, hoursPerWeek: num(set.work_hours_per_week) || 38
   };
   S.targetPerPay = S.targetMonthly * 12 / S.paysPerYear;
   const accounts = table(raw.accounts).map(r => ({ id: String(r.ID).trim(), name: r.Name, institution: r.Institution, type: r.Type, role: r.Role,
@@ -402,7 +529,81 @@ function model(raw) {
     saver: String(r.Saver || '').trim(), priority: num(r.Priority), status: String(r.Status || '').trim() }));
   const instalments = table(raw.instalments).map(r => ({ date: parseDate(r.Date), ref: r['BuyList ID'], item: r.Item, amount: num(r.Amount) || 0, paid: bool(r.Paid), row: r._row })).filter(x => x.date);
   const balances = table(raw.balances).map(r => ({ date: parseDate(r.Date), account: String(r['Account ID']).trim(), balance: num(r.Balance), note: r.Note, row: r._row })).filter(x => x.date && x.balance !== null);
-  return { S, accounts, budget, goals, instalments, balances };
+  const buyHead = (raw.buylist[0] || []).map(h => String(h).trim());
+  const buylist = table(raw.buylist).filter(r => String(r.ID).trim() && String(r.Item).trim()).map(r => {
+    const cost = num(r['Cost each']), qty = num(r.Qty) || 1, final = num(r['Final cost']);
+    return { id: String(r.ID).trim(), item: String(r.Item).trim(), category: String(r.Category || '').trim(), sub: String(r.Subcategory || '').trim(),
+      room: String(r.Room || '').trim(), priority: num(r.Priority), status: String(r.Status || 'Idea').trim(), window: String(r['Buy window'] || '').trim(),
+      cost, qty, final, total: final ?? num(r.Total) ?? (cost !== null ? cost * qty : null), low: num(r['Cost low']), premium: num(r['Cost premium']),
+      retailer: String(r.Retailer || '').trim(), method: String(r['Pay method'] || '').trim(), eligible: String(r['Pay-in-4 eligible'] || '').trim(),
+      funded: String(r['Funded by'] || '').trim(), added: parseDate(r['Date added']), link: String(r.Link || '').trim(), notes: String(r.Notes || '').trim(),
+      bought: parseDate(r['Bought on']), row: r._row };
+  });
+  const pricelog = table(raw.pricelog || [[]]).map(r => ({ date: parseDate(r.Date), id: String(r['BuyList ID'] || '').trim(), price: num(r.Price), retailer: String(r.Retailer || '').trim(), note: String(r.Notes || '').trim() }))
+    .filter(x => x.date && x.id && x.price !== null);
+  return { S, accounts, budget, goals, instalments, balances, buylist, buyHead, pricelog };
+}
+
+/* ---------- buy list: windows, sales and cooling-off ---------- */
+const OPEN = ['Idea', 'Planned', 'Waiting for sale'];
+const isOpen = b => OPEN.includes(b.status);
+// The 4th Friday of November; the sale runs to Cyber Monday
+function blackFriday(y) { const d = new Date(y, 10, 1); const first = (5 - d.getDay() + 7) % 7 + 1; return `${y}-11-${pad(first + 21)}`; }
+// Sales on fixed dates only, so the dates are always right. Each runs from start to end.
+function saleEvents(D) {
+  const t = today(), y = +t.slice(0, 4), out = [];
+  for (const yy of [y, y + 1]) {
+    const bf = blackFriday(yy);
+    out.push({ key: 'singles', name: "Singles' Day", start: `${yy}-11-11`, end: `${yy}-11-11` });
+    out.push({ key: 'bf', name: 'Black Friday to Cyber Monday', start: bf, end: addDays(bf, 3) });
+    out.push({ key: 'boxing', name: 'Boxing Day sales', start: `${yy}-12-26`, end: `${yy + 1}-01-02` });
+    out.push({ key: 'eofy', name: 'End of financial year sales', start: `${yy}-06-01`, end: `${yy}-06-30` });
+  }
+  return out.filter(e => e.end >= t).sort((a, b) => a.start.localeCompare(b.start)).slice(0, 4);
+}
+const MONTH_RE = /\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\b(?:\s+(\d{4}))?/i;
+// Turn a free-text Buy window into { group, date } so it can be sorted, filtered and placed on a payday
+function windowInfo(D, b) {
+  const w = b.window, lw = w.toLowerCase(), t = today(), sales = saleEvents(D), mv = D.S.moveDate;
+  const exact = parseDate(w);
+  if (exact) return { group: 'Planned for a payday', date: exact, exact: true };
+  if (/black friday|cyber/.test(lw)) { const e = sales.find(s => s.key === 'bf'); return { group: 'Black Friday', date: e && e.start, sale: 'bf' }; }
+  if (/boxing/.test(lw)) { const e = sales.find(s => s.key === 'boxing'); return { group: 'Boxing Day', date: e && e.start, sale: 'boxing' }; }
+  if (/eofy|end of financial/.test(lw)) { const e = sales.find(s => s.key === 'eofy'); return { group: 'End of financial year', date: e && e.start, sale: 'eofy' }; }
+  if (/sale/.test(lw) || b.status === 'Waiting for sale') { const e = sales[0]; return { group: 'Any sale', date: e && e.start, sale: 'any' }; }
+  if (/pre-?move|before (the )?move/.test(lw)) return { group: 'Before the move', date: mv ? addDays(mv, -14) : null };
+  if (/at (the )?move/.test(lw)) return { group: 'At the move', date: mv };
+  if (/after (the )?move|once moved/.test(lw)) return { group: 'After the move', date: mv ? addDays(mv, 30) : null };
+  let m = lw.match(/\bq([1-4])\s+(\d{4})/);
+  if (m) { const d = `${m[2]}-${pad((+m[1] - 1) * 3 + 1)}-01`; return { group: `Q${m[1]} ${m[2]}`, date: d }; }
+  if (/\d+\s*-\s*\d+\s*months?/.test(lw)) return { group: 'Later (a year or more)', date: addDays(t, 365) };
+  m = w.match(MONTH_RE);
+  if (m) {
+    const mi = MONTHS.findIndex(x => x.toLowerCase() === m[1].toLowerCase());
+    let yy = m[2] ? +m[2] : +t.slice(0, 4);
+    if (!m[2] && `${yy}-${pad(mi + 1)}` < t.slice(0, 7)) yy++;
+    return { group: `${MONTHS[mi]} ${yy}`, date: `${yy}-${pad(mi + 1)}-01` };
+  }
+  return { group: w ? 'Other' : 'No window yet', date: null };
+}
+// Cooling-off applies to wants (priority 2 and lower) over the threshold, counted from Date added
+function cooling(D, b) {
+  if (!isOpen(b) || (b.priority ?? 2) < 2 || (b.total ?? 0) < D.S.coolThreshold) return null;
+  if (!b.added) return { state: 'unstarted' };
+  const until = addDays(b.added, D.S.coolDays), left = daysBetween(today(), until);
+  return left > 0 ? { state: 'waiting', until, left } : { state: 'done', until };
+}
+// Pay-in-4 is four equal payments a fortnight apart, the first on the day you buy
+const schedule = (total, date, method) => method === 'Pay-in-4' ? [0, 14, 28, 42].map(k => ({ date: addDays(date, k), amount: total / 4 })) : [{ date, amount: total }];
+const hasInstalments = (D, id) => D.instalments.some(x => String(x.ref).trim() === id);
+function plannedBuys(D, skipId) {
+  const out = [];
+  for (const b of D.buylist) {
+    if (!isOpen(b) || b.id === skipId || !b.total || hasInstalments(D, b.id)) continue;
+    const w = windowInfo(D, b);
+    if (w.exact) for (const x of schedule(b.total, w.date, b.method)) out.push({ ...x, label: b.item + (b.method === 'Pay-in-4' ? ' (Pay-in-4)' : ''), id: b.id });
+  }
+  return out;
 }
 
 /* ---------- pay maths ---------- */
@@ -453,8 +654,11 @@ function occurrences(D, l, start, end) {
   }
   return out;
 }
-function forecast(D, n) {
+// extra: purchases to try out ({date, amount, label}); skipId leaves that item's own plan out so it isn't counted twice
+function forecast(D, n, extra = [], skipId = null) {
   const first = paydayOnOrBefore(D, today()), pays = [];
+  const buys = plannedBuys(D, skipId).map(x => ({ ...x, group: 'purchase', kind: 'due' }))
+    .concat(extra.map(x => ({ ...x, group: 'purchase', kind: 'due', trial: true })));
   for (let i = 0; i < n; i++) {
     const start = addDays(first, i * D.S.cycle), end = addDays(start, D.S.cycle - 1);
     const items = [];
@@ -464,11 +668,12 @@ function forecast(D, n) {
       if ((x.date >= start && x.date <= end) || (i === 0 && x.date < start))
         items.push({ date: x.date, label: x.item + (x.date < start ? ' (overdue)' : ''), amount: x.amount, group: 'instalment', kind: 'due' });
     }
+    for (const x of buys) if ((x.date >= start && x.date <= end) || (i === 0 && x.date < start)) items.push(x);
     items.sort((a, b) => a.date.localeCompare(b.date) || b.amount - a.amount);
     const sum = g => items.filter(x => x.group === g).reduce((a, x) => a + x.amount, 0);
-    const bills = sum('bill'), spending = sum('spending'), inst = sum('instalment');
+    const bills = sum('bill'), spending = sum('spending'), inst = sum('instalment'), bought = sum('purchase');
     const month = paysInMonth(D, start);
-    pays.push({ start, end, items, bills, spending, inst, takeHome: D.S.takeHome, left: D.S.takeHome - bills - spending - inst,
+    pays.push({ start, end, items, bills, spending, inst, buys: bought, takeHome: D.S.takeHome, left: D.S.takeHome - bills - spending - inst - bought,
       move: !!D.S.moveDate && D.S.moveDate >= start && D.S.moveDate <= end, nth: month.indexOf(start) + 1, inMonth: month.length });
   }
   return pays;
@@ -488,7 +693,8 @@ function renderAll() {
   applyTheme();
   $('todayLabel').textContent = new Date().toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'long' });
   const D = state.D; if (!D || !D.S.payAnchor) return;
-  renderDash(D); renderForecast(D); renderCheckin(D);
+  renderDash(D); renderBuy(D); renderForecast(D); renderCheckin(D);
+  if ($('itemDlg').open) renderItem();
 }
 
 function renderDash(D) {
@@ -607,6 +813,12 @@ function renderSoon(D, pays) {
     for (const x of p.items) if (x.kind === 'due' && x.date >= t && x.date <= until) ev.push({ date: x.date, what: x.label + (x.group === 'instalment' ? ' (Pay-in-4)' : ''), amt: money(x.amount, 2) });
   }
   if (D.S.moveDate && D.S.moveDate >= t && D.S.moveDate <= until) ev.push({ date: D.S.moveDate, cls: 'marker', what: 'Move date', amt: '' });
+  const sales = saleEvents(D);
+  sales.forEach((e, i) => {
+    if (e.start < t || e.start > until) return;
+    const n = D.buylist.filter(b => { if (!isOpen(b)) return false; const w = windowInfo(D, b); return w.sale === e.key || (w.sale === 'any' && i === 0); }).length;
+    ev.push({ date: e.start, cls: 'marker', what: `${e.name} starts` + (n ? ` · ${n} item${n > 1 ? 's' : ''} waiting` : ''), amt: '' });
+  });
   ev.sort((a, b) => a.date.localeCompare(b.date) || (a.cls === 'pay' ? -1 : 0));
   $('soonList').innerHTML = ev.length ? ev.map(e => `<li class="${e.cls || ''}"><span class="when">${fmtDate(e.date, { weekday: true })}</span><span class="what">${esc(e.what)}</span><span class="amt tnum">${e.amt}</span></li>`).join('')
     : '<li><span></span><span class="empty">Nothing dated in the next 3 weeks.</span><span></span></li>';
@@ -623,18 +835,18 @@ function renderForecast(D) {
   $('fAvg').textContent = money(avg);
   $('fAvgSub').textContent = `Target ${money(D.S.targetPerPay)} · ${under ? under + ' pay' + (under > 1 ? 's' : '') + ' below' : 'every pay meets it'}`;
   $('fLow').textContent = money(low.left);
-  $('fLowSub').textContent = `${fmtDate(low.start)}: ` + (low.inst ? `${money(low.inst)} of Pay-in-4` : `${money(low.bills)} of bills`);
+  $('fLowSub').textContent = `${fmtDate(low.start)}: ` + (low.inst + low.buys ? `${money(low.inst + low.buys)} of Pay-in-4 and planned buys` : `${money(low.bills)} of bills`);
   $('fcBody').innerHTML = pays.map((p, i) => {
     const [cls, label] = standing(D, p.left), open = state.open === p.start;
     const tags = [i === 0 ? '<span class="chip accent">This pay</span>' : '', p.inMonth === 3 ? `<span class="chip plain">${ORD(p.nth)} of 3 pays</span>` : '', p.move ? '<span class="chip warn">Move</span>' : ''].join('');
     const row = `<tr class="row${open ? ' open' : ''}" data-start="${p.start}" tabindex="0" aria-expanded="${open}">
       <td><div class="date">${fmtDate(p.start)}</div>${tags ? `<div class="tags">${tags}</div>` : ''}</td>
       <td class="r tnum">${money(p.takeHome)}</td><td class="r tnum">${money(p.bills)}</td><td class="r tnum">${money(p.spending)}</td>
-      <td class="r tnum">${p.inst ? money(p.inst) : '–'}</td><td class="r tnum left">${money(p.left)}</td><td><span class="chip ${cls}">${label}</span></td></tr>`;
+      <td class="r tnum">${p.inst ? money(p.inst) : '–'}</td><td class="r tnum">${p.buys ? money(p.buys) : '–'}</td><td class="r tnum left">${money(p.left)}</td><td><span class="chip ${cls}">${label}</span></td></tr>`;
     if (!open) return row;
     const list = g => { const xs = p.items.filter(x => x.group === g); return xs.length ? xs.map(x => `<li><span>${esc(x.label)}<span class="muted"> · ${x.kind === 'aside' ? 'set aside' : (x.kind === 'spend' ? 'week of ' : '') + fmtDate(x.date, { weekday: false })}</span></span><span class="tnum">${money(x.amount, 2)}</span></li>`).join('') : '<li class="muted">None</li>'; };
-    return row + `<tr class="detail"><td colspan="7"><div class="detail-grid">
-      <div><h3>Bills</h3><ul>${list('bill')}</ul></div><div><h3>Spending</h3><ul>${list('spending')}</ul></div><div><h3>Pay-in-4</h3><ul>${list('instalment')}</ul></div></div></td></tr>`;
+    return row + `<tr class="detail"><td colspan="8"><div class="detail-grid">
+      <div><h3>Bills</h3><ul>${list('bill')}</ul></div><div><h3>Spending</h3><ul>${list('spending')}</ul></div><div><h3>Pay-in-4 and planned buys</h3><ul>${list('instalment')}${p.buys ? list('purchase') : ''}</ul></div></div></td></tr>`;
   }).join('');
 }
 
@@ -664,8 +876,306 @@ function renderCheckin(D) {
     || '<li><span></span><span class="empty">No check-ins yet.</span><span></span></li>';
 }
 
+/* ---------- buy list ---------- */
+state.buy = { q: '', status: 'open', cat: '', win: '', sale: '', sort: 'smart', limit: 60, sel: null };
+const STATUS_FILTERS = [['open', 'To buy'], ['Planned', 'Planned'], ['Waiting for sale', 'Waiting for sale'], ['Idea', 'Ideas'], ['cooling', 'Cooling off'], ['Bought', 'Bought'], ['Dropped', 'Dropped'], ['all', 'All']];
+const priLabel = p => p === null || p === undefined ? '' : 'P' + p;
+const sum = xs => xs.reduce((a, b) => a + (b.total || 0), 0);
+function statusChip(b) {
+  const cls = { Planned: 'accent', Bought: 'good', 'Waiting for sale': 'warn' }[b.status] || 'plain';
+  return `<span class="chip ${cls}">${esc(b.status)}</span>`;
+}
+function coolChip(D, b) {
+  const c = cooling(D, b); if (!c) return '';
+  if (c.state === 'waiting') return `<span class="chip warn">Cooling off · ${c.left} day${c.left > 1 ? 's' : ''}</span>`;
+  if (c.state === 'done') return '<span class="chip good">Cooled off</span>';
+  return '';
+}
+const pricesFor = (D, id) => D.pricelog.filter(x => x.id === id).sort((a, b) => b.date.localeCompare(a.date));
+function matchesStatus(D, b, s) {
+  if (s === 'all') return true;
+  if (s === 'open') return isOpen(b);
+  if (s === 'cooling') return (cooling(D, b) || {}).state === 'waiting';
+  return b.status === s;
+}
+
+function renderBuy(D) {
+  const items = D.buylist, open = items.filter(isOpen), priced = open.filter(b => b.total);
+  const sales = saleEvents(D), info = new Map(items.map(b => [b.id, windowInfo(D, b)]));
+  $('bTotal').textContent = money(sum(priced));
+  $('bTotalSub').textContent = `${open.length} items` + (open.length - priced.length ? ` · ${open.length - priced.length} without a price yet` : '');
+  const need = open.filter(b => (b.priority ?? 9) < 2);
+  $('bNeed').textContent = money(sum(need));
+  $('bNeedSub').textContent = `${need.length} item${need.length === 1 ? '' : 's'} you marked as needs`;
+  const waiting = open.filter(b => info.get(b.id).sale);
+  $('bWait').textContent = String(waiting.length);
+  const nextSale = sales[0];
+  $('bWaitSub').textContent = `${money(sum(waiting))}` + (nextSale ? ` · ${nextSale.name} ${nextSale.start <= today() ? 'is on now' : 'in ' + daysBetween(today(), nextSale.start) + ' days'}` : '');
+  const dropped = items.filter(b => b.status === 'Dropped');
+  $('bDropped').textContent = money(sum(dropped));
+  $('bDroppedSub').textContent = dropped.length ? `${dropped.length} item${dropped.length > 1 ? 's' : ''} you decided against` : 'Drop items you no longer want and the total adds up here';
+
+  // Sale strip: fixed-date sales, with the items waiting for each
+  $('saleStrip').innerHTML = sales.map((e, i) => {
+    const forIt = open.filter(b => { const w = info.get(b.id); return w.sale === e.key || (w.sale === 'any' && i === 0); });
+    const days = daysBetween(today(), e.start);
+    const when = e.start <= today() ? 'On now' : days === 1 ? 'Tomorrow' : `In ${days} days`;
+    const dates = e.start === e.end ? fmtDate(e.start, { weekday: false }) : `${fmtDate(e.start, { weekday: false })} to ${fmtDate(e.end, { weekday: false })}`;
+    return `<button type="button" class="sale" data-sale="${e.key}" aria-pressed="${state.buy.sale === e.key}">
+      <span class="nm">${esc(e.name)}</span><span class="dt">${dates} · ${when}</span>
+      <span class="ct">${forIt.length ? `<b>${forIt.length}</b> item${forIt.length > 1 ? 's' : ''} · <b>${money(sum(forIt))}</b>` : 'Nothing waiting'}</span></button>`;
+  }).join('');
+
+  // Filter controls keep their choices across refreshes
+  const cats = [...new Set(items.map(b => b.category).filter(Boolean))].sort();
+  $('bCat').innerHTML = '<option value="">All categories</option>' + cats.map(c => `<option${c === state.buy.cat ? ' selected' : ''}>${esc(c)}</option>`).join('');
+  const groups = new Map();
+  for (const b of open) { const w = info.get(b.id); if (!groups.has(w.group)) groups.set(w.group, w.date || '9999'); }
+  $('bWindow').innerHTML = '<option value="">Any time</option>' + [...groups].sort((a, b) => a[1].localeCompare(b[1])).map(([g]) => `<option${g === state.buy.win ? ' selected' : ''}>${esc(g)}</option>`).join('');
+  $('catList').innerHTML = cats.map(c => `<option value="${esc(c)}">`).join('');
+  $('windowList').innerHTML = ['Black Friday', 'Boxing Day', 'On sale', 'Pre-move', 'At move', 'After move', ...[...groups.keys()].filter(g => /^[A-Z][a-z]{2} \d{4}$|^Q\d/.test(g))].map(w => `<option value="${esc(w)}">`).join('');
+  $('bStatus').innerHTML = STATUS_FILTERS.map(([k, label]) => `<button type="button" class="fchip" data-status="${k}" aria-pressed="${state.buy.status === k}">${label}<span class="n">${items.filter(b => matchesStatus(D, b, k)).length}</span></button>`).join('');
+
+  const q = state.buy.q.trim().toLowerCase();
+  let list = items.filter(b => matchesStatus(D, b, state.buy.status)
+    && (!state.buy.cat || b.category === state.buy.cat)
+    && (!state.buy.win || info.get(b.id).group === state.buy.win)
+    && (!state.buy.sale || info.get(b.id).sale === state.buy.sale || (info.get(b.id).sale === 'any' && sales[0] && sales[0].key === state.buy.sale))
+    && (!q || [b.item, b.category, b.sub, b.room, b.retailer, b.notes, b.window].join(' ').toLowerCase().includes(q)));
+  const when = b => info.get(b.id).date || '9999';
+  const sorts = {
+    smart: (a, b) => (a.priority ?? 9) - (b.priority ?? 9) || when(a).localeCompare(when(b)) || a.item.localeCompare(b.item),
+    when: (a, b) => when(a).localeCompare(when(b)) || (a.priority ?? 9) - (b.priority ?? 9),
+    'cost-desc': (a, b) => (b.total ?? -1) - (a.total ?? -1),
+    'cost-asc': (a, b) => (a.total ?? 1e12) - (b.total ?? 1e12),
+    added: (a, b) => (b.added || '').localeCompare(a.added || '') || b.row - a.row
+  };
+  list.sort(sorts[state.buy.sort] || sorts.smart);
+  const shown = list.slice(0, state.buy.limit);
+  $('bList').innerHTML = shown.map(b => {
+    const w = info.get(b.id), pl = pricesFor(D, b.id), low = pl.length ? Math.min(...pl.map(x => x.price)) : null;
+    const meta = [b.category, b.room, b.retailer].filter(Boolean).join(' · ');
+    const whenTxt = !w.date ? esc(w.group) : w.exact ? `Planned for<br><small>${fmtDate(w.date)}</small>` : `${esc(w.group)}<br><small>${w.sale ? 'from ' : 'around '}${fmtDate(w.date, { weekday: false })}</small>`;
+    const costSub = b.status === 'Bought' && b.bought ? `bought ${fmtDate(b.bought, { weekday: false })}` : b.qty > 1 && b.cost ? `${b.qty} × ${money(b.cost)}` : '';
+    const priceChip = low !== null && b.cost && low < b.cost && isOpen(b) ? `<span class="chip good">Seen at ${money(low)}</span>` : '';
+    return `<button type="button" class="bi" data-id="${esc(b.id)}">
+      <span><span class="bi-name">${esc(b.item)}</span><span class="bi-meta">${esc(meta)}</span></span>
+      <span class="bi-when">${whenTxt}</span>
+      <span class="bi-cost tnum">${b.total ? money(b.total) : '–'}${costSub ? `<small>${costSub}</small>` : ''}</span>
+      <span class="bi-tags">${b.priority !== null ? `<span class="chip plain">${priLabel(b.priority)}</span>` : ''}${statusChip(b)}${coolChip(D, b)}${priceChip}</span></button>`;
+  }).join('') || '<div class="empty" style="padding:14px">Nothing matches these filters.</div>';
+  $('bMore').hidden = list.length <= shown.length;
+  $('bMoreBtn').textContent = `Show ${Math.min(60, list.length - shown.length)} more of ${list.length - shown.length}`;
+}
+
+/* ---------- one item: what it costs you, and what it does to your pays and goals ---------- */
+function goalFor(D, b) {
+  const accts = new Map(D.accounts.map(a => [a.id, a]));
+  const xs = D.goals.filter(g => g.target && g.saver && !['Done', 'Dropped'].includes(g.status))
+    .map(g => ({ g, a: accts.get(g.saver) })).filter(x => x.a && x.a.perPay > 0 && x.a.role !== 'Super')
+    .sort((x, y) => (x.g.priority ?? 99) - (y.g.priority ?? 99));
+  return xs.find(x => b.funded && x.g.saver === b.funded) || xs[0] || null;
+}
+function payOptions(D) { return forecast(D, 13).map(p => p.start); }
+function purchaseDate(p) { return p < today() ? today() : p; }
+
+function openItem(id) {
+  const D = state.D, b = D.buylist.find(x => x.id === id); if (!b) return;
+  const w = windowInfo(D, b), opts = payOptions(D);
+  let pay = opts[0];
+  if (w.date) { const p = paydayOnOrBefore(D, w.date < today() ? today() : w.date); if (opts.includes(p)) pay = p; else if (p > opts[opts.length - 1]) pay = opts[opts.length - 1]; }
+  state.buy.sel = { id, pay, method: b.method === 'Pay-in-4' ? 'Pay-in-4' : 'Outright', form: null };
+  $('itMsg').textContent = '';
+  renderItem();
+  if (!$('itemDlg').open) $('itemDlg').showModal();
+}
+
+function renderItem() {
+  const D = state.D, sel = state.buy.sel; if (!D || !sel) return;
+  const b = D.buylist.find(x => x.id === sel.id);
+  if (!b) { $('itemDlg').close(); return; }
+  const S = D.S, w = windowInfo(D, b), total = b.total || 0;
+  $('itTitle').textContent = b.item;
+  $('itSub').innerHTML = [esc([b.category, b.sub, b.room].filter(Boolean).join(' · ')), b.priority !== null ? `<span class="chip plain">${priLabel(b.priority)}</span>` : '', statusChip(b), coolChip(D, b)].filter(Boolean).join(' ');
+
+  const hourly = S.takeHome / (2 * S.hoursPerWeek);
+  const real = (1 + S.investReturn) / (1 + S.inflation) - 1, future = total * Math.pow(1 + real, 10);
+  const range = b.low && b.premium ? `${money(b.low)} to ${money(b.premium)} range` : b.qty > 1 && b.cost ? `${b.qty} × ${money(b.cost)}` : b.retailer ? esc(b.retailer) : '';
+  const metrics = `<div class="metrics">
+    <div class="metric"><span class="k">Cost</span><span class="v">${total ? money(total) : 'No price yet'}</span><span class="k">${range}</span></div>
+    <div class="metric"><span class="k">Hours of work</span><span class="v">${total ? Math.round(total / hourly) + ' hrs' : '–'}</span><span class="k">at ${money(hourly, 2)} an hour take-home</span></div>
+    <div class="metric"><span class="k">Invested for 10 years instead</span><span class="v">${total ? money(future) : '–'}</span><span class="k">in today's money, at ${(S.investReturn * 100).toFixed(1)}% less ${(S.inflation * 100).toFixed(1)}% inflation</span></div></div>`;
+
+  // Impact on each pay: the forecast without this item, then with it on the chosen pay
+  let impact = '';
+  if (isOpen(b) && total) {
+    const opts = payOptions(D);
+    const base = forecast(D, 26, [], b.id);
+    const date = purchaseDate(sel.pay);
+    const withIt = forecast(D, 26, schedule(total, date, sel.method).map(x => ({ ...x, label: b.item })), b.id);
+    const changed = base.map((p, i) => ({ p, q: withIt[i] })).filter(x => Math.abs(x.p.left - x.q.left) > 0.005);
+    const newlyBelow = changed.filter(x => x.p.left >= S.targetPerPay && x.q.left < S.targetPerPay).length;
+    const short = changed.filter(x => x.q.left < 0).length;
+    const avg = base.reduce((a, p) => a + p.left, 0) / base.length;
+    const gl = goalFor(D, b);
+    const p4 = b.eligible.toLowerCase() !== 'no';
+    const verdict = short ? `<span class="chip bad">Leaves ${short} pay${short > 1 ? 's' : ''} short</span>`
+      : newlyBelow ? `<span class="chip warn">${newlyBelow} pay${newlyBelow > 1 ? 's' : ''} drop below target</span>` : '<span class="chip good">Every pay stays on target</span>';
+    impact = `<section class="it-sec"><h3>If you buy it</h3>
+      <div class="controls">
+        <div class="field"><label for="itPay">Payday</label><select id="itPay">${opts.map(p => { const f = base.find(x => x.start === p); return `<option value="${p}"${p === sel.pay ? ' selected' : ''}>${fmtDate(p)}${f ? ' · ' + money(f.left) + ' left' : ''}</option>`; }).join('')}</select></div>
+        <div class="field"><span class="small muted" style="font-weight:600">Pay with</span><div class="seg" role="group" aria-label="Pay with"><button type="button" data-method="Outright" aria-pressed="${sel.method === 'Outright'}">Outright</button><button type="button" data-method="Pay-in-4" aria-pressed="${sel.method === 'Pay-in-4'}" ${p4 ? '' : 'disabled title="Not eligible for Pay-in-4"'}>Pay-in-4</button></div></div>
+        <div>${verdict}</div>
+      </div>
+      <ul class="impact">${changed.map(x => { const [c, l] = standing(D, x.q.left); return `<li><span class="small">${fmtDate(x.p.start)}</span><span class="tnum">${money(x.p.left)} <span class="arrow">→</span> <b>${money(x.q.left)}</b> left</span><span class="chip ${c}">${l}</span></li>`; }).join('')}</ul>
+      <p class="say">That's <b>${(total / avg).toFixed(1)} pays</b> of savings at your average of ${money(avg)} left a pay.</p>
+      ${gl ? `<p class="say">If it comes out of ${esc(gl.a.name)}, <b>${esc(gl.g.name)}</b> lands about <b>${Math.max(1, Math.round(total / gl.a.perPay * S.cycle / 7))} weeks later</b> at ${money(gl.a.perPay)} a pay.</p>` : ''}
+    </section>`;
+  } else if (isOpen(b)) impact = '<section class="it-sec"><h3>If you buy it</h3><p class="say muted">Add a price to see what it does to your pays and goals.</p></section>';
+
+  // Cooling-off
+  const c = cooling(D, b);
+  const cool = c ? `<section class="it-sec"><h3>Cooling-off</h3><p class="say">${
+    c.state === 'waiting' ? `It's a want over ${money(S.coolThreshold)}, so it waits ${S.coolDays} days from when you added it. <b>${c.left} day${c.left > 1 ? 's' : ''} to go</b>, until ${fmtDate(c.until)}.`
+    : c.state === 'done' ? `The ${S.coolDays} days ended ${fmtDate(c.until)}. If you still want it, plan it for a pay. If not, drop it and it counts towards Not spent.`
+    : `It's a want over ${money(S.coolThreshold)}, but it has no Date added, so the ${S.coolDays}-day wait hasn't started.`}</p>
+    ${c.state === 'unstarted' ? '<div class="actions"><button class="btn btn-sm" type="button" data-act="cool">Start the wait today</button></div>' : ''}</section>` : '';
+
+  // Price watch
+  const pl = pricesFor(D, b.id), low = pl.length ? pl.reduce((a, x) => (x.price < a.price ? x : a), pl[0]) : null;
+  const prices = `<section class="it-sec"><h3>Prices seen</h3>
+    ${low ? `<p class="say">Lowest <b>${money(low.price, 2)}</b> on ${fmtDate(low.date, { weekday: false })}${low.retailer ? ' at ' + esc(low.retailer) : ''}${b.cost ? (low.price < b.cost ? `, ${money(b.cost - low.price)} under your list price.` : ', not below your list price.') : '.'}</p>
+      <ul class="prices">${pl.slice(0, 6).map(x => `<li><span>${fmtDate(x.date, { weekday: false })}${x.retailer ? ' · ' + esc(x.retailer) : ''}</span><span class="tnum">${money(x.price, 2)}</span></li>`).join('')}</ul>`
+      : '<p class="say muted">No prices logged yet. Log what you see while you wait for a sale.</p>'}
+    ${isOpen(b) ? `<div class="sub-form"><div class="field"><label for="itPrice">Price seen</label><input type="number" step="0.01" inputmode="decimal" id="itPrice"></div>
+      <div class="field"><label for="itShop">Where</label><input type="text" id="itShop" value="${esc(b.retailer)}"></div>
+      <button class="btn btn-sm" type="button" data-act="price">Log price</button></div>` : ''}</section>`;
+
+  // Bought form, shown when Mark bought is pressed
+  const bought = sel.form === 'bought' ? `<section class="it-sec"><h3>Mark as bought</h3><div class="sub-form">
+    <div class="field"><label for="itFinal">What you paid</label><input type="number" step="0.01" inputmode="decimal" id="itFinal" value="${total ? total.toFixed(2) : ''}"></div>
+    <div class="field"><label for="itBoughtOn">On</label><input type="date" id="itBoughtOn" value="${today()}"></div>
+    <div class="field"><span class="small muted" style="font-weight:600">Paid with</span><div class="seg" role="group" aria-label="Paid with"><button type="button" data-bmethod="Outright" aria-pressed="${sel.method === 'Outright'}">Outright</button><button type="button" data-bmethod="Pay-in-4" aria-pressed="${sel.method === 'Pay-in-4'}">Pay-in-4</button></div></div>
+    <button class="btn btn-primary btn-sm" type="button" data-act="bought-save">Save</button></div>
+    ${sel.method === 'Pay-in-4' && !hasInstalments(D, b.id) ? '<p class="say muted small">The four payments will be added to Instalments.</p>' : ''}</section>` : '';
+
+  const details = [b.notes && `<p class="say">${esc(b.notes)}</p>`,
+    b.link && /^https?:\/\//.test(b.link) && `<p class="say"><a href="${esc(b.link)}" target="_blank" rel="noopener" style="color:var(--accent)">Open the product page</a></p>`,
+    `<p class="say muted small">${[b.window && 'When: ' + esc(b.window), b.added && 'Added ' + fmtDate(b.added, { weekday: false }), b.funded && 'Funded by ' + esc(b.funded), 'Row ' + b.row + ' on BuyList'].filter(Boolean).join(' · ')}</p>`].filter(Boolean).join('');
+
+  $('itBody').innerHTML = `<section class="it-sec">${metrics}</section>${bought}${impact}${cool}${prices}<section class="it-sec"><h3>Details</h3>${details}</section>`;
+
+  const live = isLive();
+  const acts = isOpen(b)
+    ? [`<button class="btn" type="button" data-act="drop">Drop it</button>`,
+       b.status !== 'Waiting for sale' ? `<button class="btn" type="button" data-act="wait">Wait for a sale</button>` : '',
+       `<button class="btn" type="button" data-act="bought">Mark bought</button>`,
+       total ? `<button class="btn btn-primary" type="button" data-act="plan">Plan for ${fmtDate(sel.pay, { weekday: false })}</button>` : '']
+    : [`<button class="btn" type="button" data-act="restore">Put back on the list</button>`];
+  $('itActions').innerHTML = acts.join('');
+  $('itActions').querySelectorAll('button').forEach(x => { x.disabled = !live; });
+  $('itBody').querySelectorAll('button[data-act]').forEach(x => { x.disabled = !live; });
+  if (!live && !$('itMsg').textContent) $('itMsg').textContent = state.demo ? 'Connect your sheet to save changes.' : 'Saving needs the live connection.';
+}
+
+/* ---------- writes ---------- */
+const colLetter = i => { let s = ''; i++; while (i) { const m = (i - 1) % 26; s = String.fromCharCode(65 + m) + s; i = Math.floor((i - 1) / 26); } return s; };
+async function setItem(b, fields) {
+  const head = state.D.buyHead;
+  for (const [h, v] of Object.entries(fields)) {
+    const i = head.indexOf(h);
+    if (i < 0 || h === 'Total') continue;
+    await write('update_values', { range: `BuyList!${colLetter(i)}${b.row}`, values: [[v]] });
+  }
+}
+const INST_ITEM = '=IFERROR(VLOOKUP(INDEX(B:B,ROW()),BuyList!$A:$B,2,FALSE),"")';
+async function itemAction(act) {
+  const D = state.D, sel = state.buy.sel, b = D && sel && D.buylist.find(x => x.id === sel.id);
+  if (!b || !isLive() || state.busy) return;
+  if (act === 'bought') { sel.form = sel.form === 'bought' ? null : 'bought'; renderItem(); return; }
+  let msg = '', run;
+  if (act === 'plan') { const d = purchaseDate(sel.pay); run = () => setItem(b, { 'Buy window': d, 'Pay method': sel.method, Status: 'Planned' }); msg = `Planned for ${fmtDate(d)}. It's in the Pay forecast now.`; }
+  else if (act === 'drop') { run = () => setItem(b, { Status: 'Dropped' }); msg = 'Dropped. It counts towards Not spent.'; }
+  else if (act === 'wait') { run = () => setItem(b, { Status: 'Waiting for sale' }); msg = 'Marked as waiting for a sale.'; }
+  else if (act === 'restore') { run = () => setItem(b, { Status: 'Planned' }); msg = 'Back on the list.'; }
+  else if (act === 'cool') { run = () => setItem(b, { 'Date added': today() }); msg = `The ${D.S.coolDays}-day wait starts today.`; }
+  else if (act === 'price') {
+    const v = Number($('itPrice').value); if (!$('itPrice').value || !Number.isFinite(v)) { $('itMsg').textContent = 'Enter the price you saw.'; return; }
+    run = () => write('append_values', { range: 'PriceLog!A1', values: [[today(), b.id, b.item, v, $('itShop').value.trim(), b.link, '']] }); msg = 'Price logged.';
+  } else if (act === 'bought-save') {
+    const v = Number($('itFinal').value), on = $('itBoughtOn').value;
+    if (!$('itFinal').value || !Number.isFinite(v) || !on) { $('itMsg').textContent = 'Enter what you paid and the date.'; return; }
+    run = async () => {
+      await setItem(b, { Status: 'Bought', 'Final cost': v, 'Pay method': sel.method, 'Bought on': on });
+      if (sel.method === 'Pay-in-4' && !hasInstalments(D, b.id))
+        await write('append_values', { range: 'Instalments!A1', values: schedule(v, on, 'Pay-in-4').map(x => [x.date, b.id, INST_ITEM, Math.round(x.amount * 100) / 100, x.date <= today(), 'Pay-in-4']) });
+    };
+    msg = 'Marked as bought.'; sel.form = null;
+  }
+  if (!run) return;
+  state.busy = true; $('itMsg').textContent = 'Saving…';
+  $('itActions').querySelectorAll('button').forEach(x => { x.disabled = true; });
+  try { await run(); $('itMsg').textContent = msg; await refresh(); }
+  catch (err) {
+    $('itMsg').textContent = err && (err.code === 'server_unavailable' || err.code === 'upstream_error')
+      ? 'The sheet didn\'t confirm the change. Check the BuyList tab before trying again.' : explain(err);
+  } finally { state.busy = false; renderItem(); }
+}
+
+$('itClose').addEventListener('click', () => $('itemDlg').close());
+$('itemDlg').addEventListener('close', () => { state.buy.sel = null; });
+$('itBody').addEventListener('change', e => { if (e.target.id === 'itPay') { state.buy.sel.pay = e.target.value; renderItem(); } });
+$('itBody').addEventListener('click', e => {
+  const m = e.target.closest('button[data-method],button[data-bmethod]');
+  if (m && !m.disabled) { state.buy.sel.method = m.dataset.method || m.dataset.bmethod; renderItem(); return; }
+  const a = e.target.closest('button[data-act]'); if (a) itemAction(a.dataset.act);
+});
+$('itActions').addEventListener('click', e => { const a = e.target.closest('button[data-act]'); if (a) itemAction(a.dataset.act); });
+
+$('bList').addEventListener('click', e => { const r = e.target.closest('.bi'); if (r) openItem(r.dataset.id); });
+$('bSearch').addEventListener('input', e => { state.buy.q = e.target.value; state.buy.limit = 60; renderBuy(state.D); });
+$('bCat').addEventListener('change', e => { state.buy.cat = e.target.value; state.buy.limit = 60; renderBuy(state.D); });
+$('bWindow').addEventListener('change', e => { state.buy.win = e.target.value; state.buy.limit = 60; renderBuy(state.D); });
+$('bSort').addEventListener('change', e => { state.buy.sort = e.target.value; renderBuy(state.D); });
+$('bStatus').addEventListener('click', e => { const c = e.target.closest('.fchip'); if (!c) return; state.buy.status = c.dataset.status; state.buy.limit = 60; renderBuy(state.D); });
+$('saleStrip').addEventListener('click', e => { const s = e.target.closest('.sale'); if (!s) return; state.buy.sale = state.buy.sale === s.dataset.sale ? '' : s.dataset.sale; state.buy.limit = 60; renderBuy(state.D); });
+$('bMoreBtn').addEventListener('click', () => { state.buy.limit += 60; renderBuy(state.D); });
+
+// Add an item. The Total column is one formula in the header, so the new row is written in two parts around it.
+$('bAdd').addEventListener('click', () => {
+  $('addForm').reset(); $('addMsg').textContent = isLive() ? '' : (state.demo ? 'Connect your sheet to add items.' : 'Adding needs the live connection.');
+  $('addSave').disabled = !isLive(); $('addDlg').showModal();
+});
+$('addClose').addEventListener('click', () => $('addDlg').close());
+$('addForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  if (!isLive() || state.busy) return;
+  const name = $('addName').value.trim();
+  if (!name) { $('addMsg').textContent = 'Give the item a name.'; $('addName').focus(); return; }
+  const D = state.D, head = D.buyHead, ti = head.indexOf('Total');
+  if (ti < 0) { $('addMsg').textContent = 'The BuyList tab has no Total column, so the app can\'t place the new row.'; return; }
+  const next = 'B' + String(Math.max(0, ...D.buylist.map(b => +(b.id.match(/\d+/) || [0])[0])) + 1).padStart(3, '0');
+  const cost = $('addCost').value ? Number($('addCost').value) : '';
+  const vals = { ID: next, Item: name, Category: $('addCat').value.trim(), Priority: Number($('addPri').value), Status: 'Idea', 'Buy window': $('addWindow').value.trim(),
+    'Cost each': cost, Qty: Number($('addQty').value) || 1, Retailer: $('addRetailer').value.trim(), 'Date added': today(), Link: $('addLink').value.trim(), Notes: $('addNotes').value.trim(), Source: 'App' };
+  const row = head.map(h => vals[h] ?? '');
+  state.busy = true; $('addSave').disabled = true; $('addMsg').textContent = 'Adding…';
+  try {
+    const res = await write('append_values', { range: `BuyList!A1:${colLetter(ti - 1)}1`, values: [row.slice(0, ti)] });
+    const p = res && res.payload, ur = p && ((p.updates && p.updates.updatedRange) || p.updatedRange);
+    const r = ur && +(String(ur).match(/!\D+(\d+)/) || [])[1];
+    if (!r) throw { code: 'tool_error', message: 'the row was added but the app couldn\'t tell where; add the rest of the details on the BuyList tab' };
+    const rest = row.slice(ti + 1);
+    if (rest.some(v => v !== '')) await write('update_values', { range: `BuyList!${colLetter(ti + 1)}${r}:${colLetter(head.length - 1)}${r}`, values: [rest] });
+    $('addDlg').close();
+    await refresh();
+    state.buy.status = 'open'; state.buy.q = name; $('bSearch').value = name; renderBuy(state.D);
+  } catch (err) { $('addMsg').textContent = explain(err); }
+  finally { state.busy = false; $('addSave').disabled = !isLive(); }
+});
+
 /* ---------- tabs and controls ---------- */
-const TABS = ['dash', 'forecast', 'checkin'];
+const TABS = ['dash', 'buy', 'forecast', 'checkin'];
 function showTab(name) {
   for (const t of TABS) { $('tab-' + t).setAttribute('aria-selected', String(t === name)); $('view-' + t).hidden = t !== name; }
   try { localStorage.setItem('cc-tab', name); } catch (e) {}
@@ -719,11 +1229,12 @@ async function refresh() {
   setStatus('loading', 'Loading from your sheet…');
   $('refreshBtn').disabled = true;
   try {
-    const [settings, accounts, budget, goals, instalments, balances] = await Promise.all([
+    const [settings, accounts, budget, goals, instalments, balances, buylist, pricelog] = await Promise.all([
       readRange('Settings!A1:D80'), readRange('Accounts!A1:J100'), readRange('Budget!A1:M300'),
-      readRange('Goals!A1:I60'), readRange('Instalments!A1:F400'), readRange('Balances!A1:D5000')
+      readRange('Goals!A1:I60'), readRange('Instalments!A1:F400'), readRange('Balances!A1:D5000'),
+      readRange('BuyList!A1:W1000'), readRange('PriceLog!A1:G3000')
     ]);
-    const D = model({ settings, accounts, budget, goals, instalments, balances });
+    const D = model({ settings, accounts, budget, goals, instalments, balances, buylist, pricelog });
     if (!D.S.payAnchor) throw { code: 'tool_error', message: 'the Settings tab has no pay_anchor date' };
     state.D = D; state.demo = false; state.live = true;
     notice('');

@@ -16,11 +16,11 @@ No figures live in this repo. Everything personal stays in the sheet, behind Goo
 - **Inside claude.ai:** through the Google Sheets connector.
 - **On GitHub Pages:** through Google sign-in. It uses the same OAuth Client ID as Jackets & Manuscripts, and shares its sign-in, because both live on `jcm-book-library.github.io`.
 - **The sheet link** is entered once under **Sheet** and saved in that browser (`cc_config`), never in the code. Until it's set, the app shows made-up example figures with a banner saying so.
-- **What it writes:** new rows on Balances (check-ins), and the Paid tick on Instalments. Nothing else.
+- **What it writes:** new rows on Balances (check-ins), BuyList (new items), PriceLog (prices seen) and Instalments (Pay-in-4 when you mark something bought); the Paid tick on Instalments; and status, buy window, pay method, final cost and dates on one BuyList row at a time. Nothing else.
 
 ## Plan
 1. **Sheet** (done): old tabs consolidated into one Sheet with Settings, Accounts, Budget, Goals, BuyList, Instalments, Balances, Super, Trades, PriceLog, Coaching and a Review tab of open questions.
 2. **Base app** (done): Dashboard, Pay forecast and Check-in.
-3. **Buy List:** filters, cooling-off, purchase impact (what a purchase does to each payday and to each goal date), price log and sale windows.
+3. **Buy list** (done): filters, sale calendar, cooling-off, purchase impact on each payday and on your goals, price log, plan for a payday, mark bought or dropped, add items.
 4. **Investing:** trades, live prices, target mix, regular investing plan.
 5. **Super and projections:** Super Guarantee check, contribution cap, fees, projection in today's dollars, and what-if sliders.
