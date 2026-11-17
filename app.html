@@ -415,7 +415,7 @@ function parseDate(v) {
   if (m) return `${m[3]}-${pad(+m[2])}-${pad(+m[1])}`;
   return null;
 }
-// "$1,057.35", "-$39.90", "($40)", "12.0%", "3062.42" → numbers; blank → null
+// "$1,234.50", "-$12.30", "($40)", "12.0%", "2500.75" → numbers; blank → null
 function num(v) {
   if (typeof v === 'number') return v;
   let s = String(v ?? '').trim();
@@ -1080,12 +1080,19 @@ function renderItem() {
 
 /* ---------- writes ---------- */
 const colLetter = i => { let s = ''; i++; while (i) { const m = (i - 1) % 26; s = String.fromCharCode(65 + m) + s; i = Math.floor((i - 1) / 26); } return s; };
+// Sheet safety: find the row by its ID right before writing, and require exactly one match
+async function findRow(tab, id) {
+  const ids = await readRange(`${tab}!A1:A3000`), hits = [];
+  ids.forEach((r, i) => { if (i && String(r[0] ?? '').trim() === id) hits.push(i + 1); });
+  if (hits.length !== 1) throw { code: 'tool_error', message: hits.length ? `${id} appears ${hits.length} times on ${tab}, so nothing was changed` : `${id} isn't on ${tab} any more; press Refresh` };
+  return hits[0];
+}
 async function setItem(b, fields) {
-  const head = state.D.buyHead;
+  const head = state.D.buyHead, row = await findRow('BuyList', b.id);
   for (const [h, v] of Object.entries(fields)) {
     const i = head.indexOf(h);
     if (i < 0 || h === 'Total') continue;
-    await write('update_values', { range: `BuyList!${colLetter(i)}${b.row}`, values: [[v]] });
+    await write('update_values', { range: `BuyList!${colLetter(i)}${row}`, values: [[v]] });
   }
 }
 const INST_ITEM = '=IFERROR(VLOOKUP(INDEX(B:B,ROW()),BuyList!$A:$B,2,FALSE),"")';
@@ -1154,13 +1161,15 @@ $('addForm').addEventListener('submit', async e => {
   if (!name) { $('addMsg').textContent = 'Give the item a name.'; $('addName').focus(); return; }
   const D = state.D, head = D.buyHead, ti = head.indexOf('Total');
   if (ti < 0) { $('addMsg').textContent = 'The BuyList tab has no Total column, so the app can\'t place the new row.'; return; }
-  const next = 'B' + String(Math.max(0, ...D.buylist.map(b => +(b.id.match(/\d+/) || [0])[0])) + 1).padStart(3, '0');
   const cost = $('addCost').value ? Number($('addCost').value) : '';
-  const vals = { ID: next, Item: name, Category: $('addCat').value.trim(), Priority: Number($('addPri').value), Status: 'Idea', 'Buy window': $('addWindow').value.trim(),
+  const vals = { ID: '', Item: name, Category: $('addCat').value.trim(), Priority: Number($('addPri').value), Status: 'Idea', 'Buy window': $('addWindow').value.trim(),
     'Cost each': cost, Qty: Number($('addQty').value) || 1, Retailer: $('addRetailer').value.trim(), 'Date added': today(), Link: $('addLink').value.trim(), Notes: $('addNotes').value.trim(), Source: 'App' };
-  const row = head.map(h => vals[h] ?? '');
   state.busy = true; $('addSave').disabled = true; $('addMsg').textContent = 'Adding…';
   try {
+    // New ID = highest on the sheet + 1, read just before appending
+    const ids = await readRange('BuyList!A1:A3000');
+    vals.ID = 'B' + String(Math.max(0, ...ids.slice(1).map(r => +((String(r[0] ?? '').match(/\d+/) || [0])[0]))) + 1).padStart(3, '0');
+    const row = head.map(h => vals[h] ?? '');
     const res = await write('append_values', { range: `BuyList!A1:${colLetter(ti - 1)}1`, values: [row.slice(0, ti)] });
     const p = res && res.payload, ur = p && ((p.updates && p.updates.updatedRange) || p.updatedRange);
     const r = ur && +(String(ur).match(/!\D+(\d+)/) || [])[1];
@@ -1278,7 +1287,13 @@ $('ciForm').addEventListener('submit', async e => {
 $('instList').addEventListener('click', async e => {
   const b = e.target.closest('button[data-paid]'); if (!b || !isLive() || state.busy) return;
   state.busy = true; b.disabled = true; b.textContent = 'Saving…';
-  try { await write('update_values', { range: `Instalments!E${b.dataset.paid}`, values: [[true]] }); await refresh(); }
+  try {
+    // Instalments rows have no ID, so check the row still holds the same payment before ticking it
+    const x = state.D.instalments.find(i => String(i.row) === b.dataset.paid);
+    const r = (await readRange(`Instalments!A${x.row}:B${x.row}`))[0] || [];
+    if (parseDate(r[0]) !== x.date || String(r[1] ?? '').trim() !== String(x.ref).trim()) throw { code: 'tool_error', message: 'that payment has moved on the Instalments tab; press Refresh and try again' };
+    await write('update_values', { range: `Instalments!E${x.row}`, values: [[true]] }); await refresh();
+  }
   catch (err) { b.textContent = 'Mark paid'; b.disabled = false; notice(explain(err), 'error'); }
   finally { state.busy = false; }
 });

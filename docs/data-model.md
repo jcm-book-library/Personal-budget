@@ -98,6 +98,6 @@ Formulas only. The app ignores this tab and computes its own figures.
   - planned BuyList items assigned to that cycle.
 
   What's left is what goes to savings.
-- **Writes:** the app only appends rows or edits input cells. It never rewrites a whole tab and never writes to formula columns. On BuyList it writes `Status`, `Buy window`, `Pay method`, `Final cost`, `Bought on` and `Date added` for one row at a time, and adds new rows in two parts so the `Total` formula column is never touched.
+- **Writes:** the app only appends rows or edits input cells. It never rewrites a whole tab and never writes to formula columns. On BuyList it finds the row by `ID` right before writing (exactly one match, or it stops), then writes `Status`, `Buy window`, `Pay method`, `Final cost`, `Bought on` and `Date added` for that row, and adds new rows in two parts so the `Total` formula column is never touched. A new ID is the highest on the sheet plus 1, read just before adding. Instalments rows have no ID, so before ticking Paid it checks the row's date and BuyList ID still match.
 - **Sales:** only fixed-date sales are shown (Singles' Day 11 Nov, Black Friday to Cyber Monday, Boxing Day to 2 Jan, EOFY in June). Items marked `On sale` or `Waiting for sale` count towards the next one.
 - **Purchase impact:** the forecast is run with and without the item on the chosen payday. Pay-in-4 is four equal payments 14 days apart, the first on the day you buy.
